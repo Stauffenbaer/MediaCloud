@@ -1,0 +1,4 @@
+[Project]
+Name=MediaCloud
+Manager=KDevCMakeManager
+VersionControl=kdevgit
