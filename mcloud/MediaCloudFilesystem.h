@@ -20,6 +20,13 @@ namespace MediaCloud {
 		std::string type = "";
 	};
 	
+	struct File
+	{
+		int ID;
+		std::string path;
+		std::string type;
+	};
+	
 	class Filesystem
 	{
 	public:
@@ -31,6 +38,9 @@ namespace MediaCloud {
 		void registerFile(std::string);
 		void registerFiles(std::string);
 		void registerDirectory(std::string);
+		
+		File* getFile(int);
+		std::vector<File*> getFiles();
 		
 	protected:
 		Database *db;

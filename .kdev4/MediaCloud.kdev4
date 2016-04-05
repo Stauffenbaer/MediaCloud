@@ -20,7 +20,7 @@ Path=gcc
 Type=GCC
 
 [Filters]
-size=25
+size=26
 
 [Filters][0]
 inclusive=0
@@ -108,6 +108,11 @@ pattern=*.pyo
 targets=1
 
 [Filters][24]
+inclusive=0
+pattern=/data/mediacloud.db
+targets=1
+
+[Filters][25]
 inclusive=0
 pattern=/data/mediacloud.db
 targets=1

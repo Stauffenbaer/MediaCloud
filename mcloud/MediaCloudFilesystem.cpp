@@ -120,3 +120,36 @@ void Filesystem::registerAllExtensions()
 		extensions.push_back(pair);
 	}
 }
+
+File* Filesystem::getFile(int ID)
+{
+	std::stringstream query = std::stringstream();
+	query << "SELECT * FROM tbl_files WHERE ID='";
+	query << ID << "'";
+	
+	Result *res = db->query(query.str());
+	if (res->rows == 0)
+		return 0;
+	File *f = new File();
+	f->ID = ID;
+	f->path = res->data[0].columns[1];
+	f->type = res->data[0].columns[2];
+	
+	return f;
+}
+
+std::vector<File*> Filesystem::getFiles()
+{
+	std::vector<File*> files = std::vector<File*>();
+	Result *res = db->query("SELECT * FROM tbl_files");
+	for(int i = 0;i < res->rows; ++i) {
+		File* f = new File();
+		f->ID = i;
+		f->path = res->data[i].columns[1];
+		f->type = res->data[i].columns[2];
+		
+		files.push_back(f);
+	}
+	
+	return files;
+}
