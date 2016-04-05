@@ -1,7 +1,7 @@
 add_definitions(-std=c++11)
 
-set(mcloudSRC MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp)
-set(mcloudLIBS ${Boost_LIBRARIES} sqlite3)
+set(mcloudSRC MediaCloudFilesystem.cpp MediaCloudDecoder.cpp MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp MediaCloudDecoder.cpp)
+set(mcloudLIBS ${Boost_LIBRARIES} sqlite3 avutil avcodec avformat)
 
 link_libraries(${mcloudLIBS})
 add_library(mcloud ${mcloudSRC})

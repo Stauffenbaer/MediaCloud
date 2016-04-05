@@ -1,8 +1,12 @@
 #pragma once
 
-class MediaCloudClient
-{
-public:
-	MediaCloudClient();
-	~MediaCloudClient();
-};
+namespace MediaCloud {
+
+	class Client
+	{
+	public:
+		Client();
+		~Client();
+	};
+
+}

@@ -1,11 +1,13 @@
 #include "MediaCloudServer.h"
 
-MediaCloudServer::MediaCloudServer()
-{
+using namespace MediaCloud;
 
+Server::Server()
+{
+	filesystem = new Filesystem();
 }
 
-MediaCloudServer::~MediaCloudServer()
+Server::~Server()
 {
-
+	delete filesystem;
 }

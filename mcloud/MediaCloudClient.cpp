@@ -1,11 +1,13 @@
 #include "MediaCloudClient.h"
 
-MediaCloudClient::MediaCloudClient()
+using namespace MediaCloud;
+
+Client::Client()
 {
 
 }
 
-MediaCloudClient::~MediaCloudClient()
+Client::~Client()
 {
 
 }

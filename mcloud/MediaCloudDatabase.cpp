@@ -1,18 +1,28 @@
 #include "MediaCloudDatabase.h"
 
-MediaCloudDatabase::MediaCloudDatabase()
+using namespace MediaCloud;
+
+Database::Database()
 {
+	max = pow10(saltLength) - 1;
+	min = max / 9;
+	
 	hashProvider = boost::uuids::detail::sha1();
 	sqlite3_open(this->filename.c_str(), &this->db);
+	
+	int r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, salt TEXT)", 0, 0, 0);
+	if (r != 0)
+		std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
 }
 
-MediaCloudDatabase::~MediaCloudDatabase()
+Database::~Database()
 {
 	sqlite3_close(this->db);
 }
 
-std::string MediaCloudDatabase::calculateSHA1(char *data, size_t length)
+std::string Database::calculateSHA1(char *data, size_t length)
 {
+	hashProvider.reset();
 	char hash[20];
 	hashProvider.process_bytes(data, length);
 	
@@ -36,4 +46,36 @@ std::string MediaCloudDatabase::calculateSHA1(char *data, size_t length)
     }
     
     return stream.str();
+}
+
+bool Database::registerUser(std::string username, std::string password)
+{
+	//TODO: check if username is available
+	
+	boost::random::uniform_int_distribution<> usalt(min, max);
+	unsigned long salt = usalt(randomProvider);
+	
+	std::string saltHash = this->calculateSHA1((char*) &salt, sizeof(unsigned long));
+	std::string pHash = this->calculateSHA1((char*) password.c_str(), (size_t) password.length());
+	std::string p = pHash + saltHash;
+	std::string passwordHash = this->calculateSHA1((char*) p.c_str(), (size_t) p.length());
+	std::stringstream query = std::stringstream();
+	query << "INSERT INTO tbl_users (username, password, salt) VALUES ('";
+	query << username << "', '";
+	query << passwordHash << "', '";
+	query << saltHash << "')";
+	
+	int r = sqlite3_exec(this->db, query.str().c_str(), 0, 0, 0);
+	if (r != 0) {
+		std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
+		return false;
+	}
+	
+	return true;
+}
+
+bool Database::login(std::string username, std::string password)
+{
+	//TODO: implement
+	return false;
 }

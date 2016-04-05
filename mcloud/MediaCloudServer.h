@@ -1,8 +1,17 @@
 #pragma once
 
-class MediaCloudServer
-{
-public:
-	MediaCloudServer();
-	~MediaCloudServer();
-};
+#include "MediaCloudFilesystem.h"
+
+namespace MediaCloud {
+
+	class Server
+	{
+	public:
+		Server();
+		~Server();
+		
+	protected:
+		Filesystem *filesystem;
+	};
+
+}
