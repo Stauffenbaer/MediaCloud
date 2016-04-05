@@ -2,6 +2,7 @@
 
 #include "MediaCloudFilesystem.h"
 #include "MediaCloudDatabase.h"
+#include "MediaCloudSettings.h"
 
 namespace MediaCloud {
 
@@ -13,6 +14,7 @@ namespace MediaCloud {
 		
 		Database* database;
 		Filesystem *filesystem;
+		Settings *settings;
 	};
 
 }

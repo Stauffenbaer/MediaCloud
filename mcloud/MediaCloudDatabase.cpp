@@ -23,6 +23,9 @@ Database::Database()
 	
 	r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_files (ID INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT)", 0, 0, 0);
 	if (r != 0) std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
+	
+	r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_settings (ID INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value TEXT)", 0, 0, 0);
+ 	if (r != 0) std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
 }
 
 Database::~Database()
