@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MediaCloudFilesystem.h"
+#include "MediaCloudDatabase.h"
 
 namespace MediaCloud {
 
@@ -10,7 +11,7 @@ namespace MediaCloud {
 		Server();
 		~Server();
 		
-	protected:
+		Database* database;
 		Filesystem *filesystem;
 	};
 

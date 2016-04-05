@@ -2,6 +2,13 @@
 
 using namespace MediaCloud;
 
+namespace MediaCloud {
+	namespace Database_helper {
+		Result* currentResult = 0;
+		bool finished = false;
+	}
+}
+
 Database::Database()
 {
 	max = pow10(saltLength) - 1;
@@ -10,13 +17,17 @@ Database::Database()
 	hashProvider = boost::uuids::detail::sha1();
 	sqlite3_open(this->filename.c_str(), &this->db);
 	
-	int r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, salt TEXT)", 0, 0, 0);
-	if (r != 0)
-		std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
+	int r;
+	r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, salt TEXT)", 0, 0, 0);
+	if (r != 0) std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
+	
+	r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_files (ID INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT)", 0, 0, 0);
+	if (r != 0) std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
 }
 
 Database::~Database()
 {
+	free(Database_helper::currentResult);
 	sqlite3_close(this->db);
 }
 
@@ -78,4 +89,39 @@ bool Database::login(std::string username, std::string password)
 {
 	//TODO: implement
 	return false;
+}
+
+Result* Database::query(std::string query)
+{
+	Result* res = new Result();
+	
+	sqlite3_stmt* statement;
+	int r = sqlite3_prepare(db, query.c_str(), -1, &statement, 0);
+	if (r != 0)
+		return 0;
+
+	int c = sqlite3_column_count(statement);
+	res->columns = c;
+	
+	res->data = std::vector<ResultRow>();
+	while (true) {
+        int s = sqlite3_step (statement);
+        if (s == SQLITE_ROW) {
+			ResultRow row = ResultRow();
+			for(int i = 0;i < res->columns; ++i) {
+				const unsigned char* text = sqlite3_column_text (statement, i);
+				
+				row.columns.push_back(std::string((char*) text));
+			}
+			res->data.push_back(row);
+        }
+        else if (s == SQLITE_DONE) {
+            break;
+        }
+    }
+    
+    sqlite3_finalize(statement);
+	
+	res->rows = res->data.size();
+	return res;
 }

@@ -1,11 +1,12 @@
 #include <iostream>
 
-#include "mcloud/MediaCloudDatabase.h"
-#include "mcloud/MediaCloudDecoder.h"
+#include "mcloud/MediaCloudServer.h"
 
 int main(int argc, char **argv) 
 {
-	MediaCloud::Decoder *decoder = new MediaCloud::Decoder();
-	getchar();
+	MediaCloud::Server *server = new MediaCloud::Server();
+	
+	server->filesystem->registerDirectory("/home/julian/Musik/");
+	
 	return 0;
 }

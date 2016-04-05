@@ -6,6 +6,7 @@
 #include <boost/uuid/sha1.hpp>
 #include <sqlite3.h>
 #include <functional>
+#include <array>
 
 namespace MediaCloud {
 
@@ -15,6 +16,19 @@ namespace MediaCloud {
 		std::string Username;
 		std::string PasswordHash;
 		std::string Salt;
+	};
+	
+	struct ResultRow 
+	{
+		std::vector<std::string> columns;
+	};
+	
+	struct Result
+	{
+		size_t rows = 0;
+		size_t columns = 0;
+		
+		std::vector<ResultRow> data;
 	};
 
 	class Database
@@ -27,6 +41,8 @@ namespace MediaCloud {
 		
 		bool registerUser(std::string, std::string);
 		bool login(std::string, std::string);
+		
+		Result* query(std::string);
 		
 	protected:
 		sqlite3 *db;
