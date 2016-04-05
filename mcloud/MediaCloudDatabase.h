@@ -48,7 +48,7 @@ namespace MediaCloud {
 		sqlite3 *db;
 		
 	private:
-		const std::string& filename = "mediacloud.db";
+		const std::string& filename = "data/mediacloud.db";
 		
 		boost::uuids::detail::sha1 hashProvider;
 		boost::random::mt19937 randomProvider;

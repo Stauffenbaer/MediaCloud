@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensions>
+	<extension key="mp3" value="audio" />
+	<extension key="ogg" value="audio" />
+	<extension key="m4a" value="audio" />
+	
+	<extension key="jpg" value="image" />
+	<extension key="jpeg" value="image" />
+</extensions>

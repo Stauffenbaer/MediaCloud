@@ -2,13 +2,6 @@
 
 using namespace MediaCloud;
 
-namespace MediaCloud {
-	namespace Database_helper {
-		Result* currentResult = 0;
-		bool finished = false;
-	}
-}
-
 Database::Database()
 {
 	max = pow10(saltLength) - 1;
@@ -17,20 +10,13 @@ Database::Database()
 	hashProvider = boost::uuids::detail::sha1();
 	sqlite3_open(this->filename.c_str(), &this->db);
 	
-	int r;
-	r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, salt TEXT)", 0, 0, 0);
-	if (r != 0) std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
-	
-	r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_files (ID INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT)", 0, 0, 0);
-	if (r != 0) std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
-	
-	r = sqlite3_exec(this->db, "CREATE TABLE IF NOT EXISTS tbl_settings (ID INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value TEXT)", 0, 0, 0);
- 	if (r != 0) std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
+	this->query("CREATE TABLE IF NOT EXISTS tbl_users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, salt TEXT)");
+	this->query("CREATE TABLE IF NOT EXISTS tbl_files (ID INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, type TEXT)");
+	this->query("CREATE TABLE IF NOT EXISTS tbl_settings (ID INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value TEXT)");
 }
 
 Database::~Database()
 {
-	free(Database_helper::currentResult);
 	sqlite3_close(this->db);
 }
 
@@ -118,9 +104,8 @@ Result* Database::query(std::string query)
 			}
 			res->data.push_back(row);
         }
-        else if (s == SQLITE_DONE) {
+        else if (s == SQLITE_DONE)
             break;
-        }
     }
     
     sqlite3_finalize(statement);

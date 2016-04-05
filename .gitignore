@@ -1,1 +1,3 @@
 build/*
+build/data/mediacloud.db
+!build/data/
