@@ -16,18 +16,15 @@ bool Filesystem::fileRegistered(std::string path)
 {
 	boost::replace_all(path, "\'", "&quot");
 	std::stringstream query = std::stringstream();
-	query << "SELECT * FROM tbl_files";
+	query << "SELECT * FROM tbl_files WHERE path='";
+	query << path << "'";
 	
 	bool exists = false;
 	
-	Result* r = db->query("SELECT * FROM tbl_files");
+	Result* r = db->query(query.str());
 	
-	for(int i = 0;i < r->rows; ++i) {
-		if (r->data[i].columns[1] == path) {
-			exists = true;
-			break;
-		}
-	}
+	if (r->data[0].columns[1] == path)
+		exists = true;
 	
 	return exists;
 }
@@ -61,7 +58,9 @@ void Filesystem::registerDirectory(std::string directory)
 {
 	struct rd
 	{
-		rd(boost::filesystem::path dir) : _path(dir) {}
+		rd(boost::filesystem::path dir) : _path(dir) {
+			
+		}
 
 		boost::filesystem::recursive_directory_iterator begin() {
 			return boost::filesystem::recursive_directory_iterator(_path); 
