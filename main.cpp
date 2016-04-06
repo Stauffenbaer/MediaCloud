@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	
 	server->filesystem->registerDirectory("/home/julian/Musik/");
 	
-	MediaCloud::File* f = server->filesystem->getFile(1);
+	MediaCloud::File* f = server->filesystem->getFile(63);
 	
 	int err = 0;
 	server->decoder->playAudioFile(f, ao_default_driver_id(), &err);

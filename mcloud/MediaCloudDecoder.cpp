@@ -29,6 +29,7 @@ using namespace MediaCloud;
 Decoder::Decoder()
 {
 	av_register_all();
+	
 	ao_initialize();
 	
 	container = avformat_alloc_context();
@@ -42,6 +43,11 @@ Decoder::~Decoder()
 void Decoder::playAudioFile(File* file, int driver, int* err)
 {
 	*err = 0;
+	
+	if (driver == -1) {
+		*err = 7;
+		return;
+	}
 	
 	if (file->type != "audio") {
 		*err = -1;
@@ -97,26 +103,58 @@ void Decoder::playAudioFile(File* file, int driver, int* err)
     format.matrix = 0;
 
     ao_device *device = ao_open_live(driver, &format, 0);
+	
+	if (device == 0) {
+		*err = 10;
+		
+		switch(errno) {
+			default:
+				break;
+				
+			case AO_ENODRIVER:
+				std::cerr << "No driver corresponding!" << std::endl;
+				break;
+			case AO_ENOTLIVE:
+				std::cerr << "Driver is no live device!" << std::endl;
+				break;
+			case AO_EBADOPTION:
+				std::cerr << "Driver options failure!" << std::endl;
+				break;
+			case AO_EOPENDEVICE:
+				std::cerr << "Cannot open device!" << std::endl;
+				break;
+			case AO_EFAIL:
+				std::cerr << "Driver failure!" << std::endl;
+				break;
+		}
+		
+		return;
+	}
+	
+	
 
     AVPacket packet;
     av_init_packet(&packet);
     AVFrame *frame = avcodec_alloc_frame();
 
-    int buffer_size = ctx->frame_size;
+    int buffer_size = boost::filesystem::file_size(boost::filesystem::path(file->path));
     uint8_t buffer[buffer_size];
     packet.data = buffer;
     packet.size = buffer_size;
 	
-    int finished=0;
     while (av_read_frame(container, &packet) >= 0)
     {
         if (packet.stream_index != stream)
 			continue;
 		
-		int len = avcodec_decode_audio4(ctx, frame, &finished, &packet);
+		int finished = 0;
+ 		int len = avcodec_decode_audio4(ctx, frame, &finished, &packet);
 		
-		if (finished) {
-			ao_play(device, (char*)frame->extended_data[0],frame->linesize[0] );
+		if (ao_play(device, (char*)frame->extended_data[0], frame->linesize[0]) == 0) {
+			*err = 6;
+			return;
 		}
     }
+    
+    ao_close(device);
 }

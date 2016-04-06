@@ -159,6 +159,7 @@ File* Filesystem::getFile(int ID)
 	f->path = res->data[0].columns[1];
 	f->type = res->data[0].columns[2];
 	
+	boost::replace_all(f->path, "&quot", "\'");
 	return f;
 }
 
@@ -172,6 +173,7 @@ std::vector<File*> Filesystem::getFiles()
 		f->path = res->data[i].columns[1];
 		f->type = res->data[i].columns[2];
 		
+		boost::replace_all(f->path, "&quot", "\'");
 		files.push_back(f);
 	}
 	
