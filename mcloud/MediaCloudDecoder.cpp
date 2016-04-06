@@ -35,3 +35,8 @@ Decoder::~Decoder()
 {
 	
 }
+
+void Decoder::playAudioFile(File* file, int driver)
+{
+	
+}

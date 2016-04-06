@@ -24,13 +24,19 @@ SOFTWARE.
 
 #pragma once
 
+#include "MediaCloudFilesystem.h"
+
 extern "C" {
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
 	#include <libavutil/avutil.h>
+	
+	#include <ao/ao.h>
 }
 
 #include <iostream>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace MediaCloud {
 
@@ -39,6 +45,8 @@ namespace MediaCloud {
 	public:
 		Decoder();
 		~Decoder();
+		
+		void playAudioFile(File*, int);
 	};
 
 }

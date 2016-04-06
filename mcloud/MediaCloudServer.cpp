@@ -31,6 +31,7 @@ Server::Server()
 	database = new Database();
 	filesystem = new Filesystem(database);
 	settings = new Settings(database);
+	decoder = new Decoder();
 }
 
 Server::~Server()
@@ -38,4 +39,5 @@ Server::~Server()
 	delete database;
 	delete filesystem;
 	delete settings;
+	delete decoder;
 }
