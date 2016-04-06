@@ -47,3 +47,13 @@ std::string* Settings::GetValue(std::string key)
 	
 	return 0;
 }
+
+void Settings::SetValue(std::string key, std::string value)
+{
+	std::stringstream query = std::stringstream();
+	query << "INSERT INTO tbl_settings (key, value) VALUES ('";
+	query << key << "', '";
+	query << value << "')";
+	
+	db->query(query.str());
+}

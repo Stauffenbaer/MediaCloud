@@ -70,8 +70,68 @@ void Filesystem::registerFile(std::string path)
 	query << "INSERT INTO tbl_files (path, type) VALUES ('";
 	query << path << "', '";
 	query << type << "')";
-	
 	db->query(query.str());
+	
+	if (type == "audio") {
+		ID3_Tag tag;
+		tag.Link(path.c_str(), ID3TT_ID3V1 | ID3TT_LYRICS3V2 | ID3TT_MUSICMATCH);
+		
+		ID3_Frame *titleFrame = tag.Find(ID3FID_TITLE);
+		ID3_Frame *artistFrame = tag.Find(ID3FID_LEADARTIST);
+		ID3_Frame *albumFrame = tag.Find(ID3FID_ALBUM);
+		ID3_Frame *trackFrame = tag.Find(ID3FID_TRACKNUM);
+		
+		const Mp3_Headerinfo *header = tag.GetMp3HeaderInfo();
+		long duration = 0;
+		if (header)
+			duration = header->time;
+		
+		const unsigned int size = 1024;
+		
+		char title[size];
+		memset(title, 0, size);
+		char artist[size];
+		memset(artist, 0, size);
+		char album[size];
+		memset(album, 0, size);
+		char track[size];
+		memset(track, 0, size);
+		
+		int tracknr = 0;
+		
+		if (titleFrame)
+			titleFrame->Field(ID3FN_TEXT).Get(title, size);
+		if (artistFrame)
+			artistFrame->Field(ID3FN_TEXT).Get(artist, size);
+		if (albumFrame)
+			albumFrame->Field(ID3FN_TEXT).Get(album, size);
+		if (trackFrame)
+			trackFrame->Field(ID3FN_TEXT).Get(track, size);
+		
+		std::istringstream(std::string(track)) >> tracknr;
+		
+		query = std::stringstream();
+		query << "SELECT ID FROM tbl_files WHERE path='";
+		query << path << "'";
+		
+		Result* res = db->query(query.str());
+		if (res != 0) {
+			int fID;
+			std::string sID = res->data[0].columns[0];
+			std::istringstream(sID) >> fID;
+			
+			query = std::stringstream();
+			query << "INSERT INTO tbl_music (file, title, artist, album, tracknr, duration) VALUES ('";
+			query << fID << "', '";
+			query << title << "', '";
+			query << artist << "', '";
+			query << album << "', '";
+			query << tracknr << "', '";
+			query << duration << "')";
+			
+			db->query(query.str());
+		}
+	}
 }
 
 void Filesystem::registerFiles(std::string path)

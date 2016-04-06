@@ -36,6 +36,9 @@ SOFTWARE.
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/filesystem.hpp>
 
+#include <id3/tag.h>
+#include <id3/id3lib_frame.h>
+
 namespace MediaCloud {
 
 	struct ExtensionPair

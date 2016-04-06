@@ -30,14 +30,8 @@ int main(int argc, char **argv)
 {
 	MediaCloud::Server *server = new MediaCloud::Server();
 	
-	server->filesystem->registerDirectory("/home/julian/Musik/");
+	server->settings->SetValue(MCD_ENTRY_ROOT_DIRECTORY, "/home/julian/Musik");
+	server->filesystem->registerDirectory(*server->settings->GetValue(MCD_ENTRY_ROOT_DIRECTORY));
 	
-	MediaCloud::File* f = server->filesystem->getFile(63);
-	
-	int err = 0;
-	server->decoder->playAudioFile(f, ao_default_driver_id(), &err);
-	std::cout << err << std::endl;
-	
-	getchar();
 	return 0;
 }

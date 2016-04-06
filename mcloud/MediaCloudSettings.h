@@ -26,8 +26,10 @@ SOFTWARE.
 
 #include "MediaCloudDatabase.h"
 
-namespace MediaCloud {
+#define MCD_ENTRY_ROOT_DIRECTORY "application.root_directory"
 
+namespace MediaCloud {
+	
 	class Settings
 	{
 	public:
@@ -35,6 +37,8 @@ namespace MediaCloud {
 		~Settings();
 		
  		std::string* GetValue(std::string);
+		void SetValue(std::string, std::string);
+		
 		
 	protected:
 		Database* db;
