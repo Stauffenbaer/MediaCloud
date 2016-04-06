@@ -27,9 +27,11 @@ SOFTWARE.
 #include "MediaCloudFilesystem.h"
 
 extern "C" {
+	#include <libavutil/mathematics.h>
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
 	#include <libavutil/avutil.h>
+	#include <libswscale/swscale.h>
 	
 	#include <ao/ao.h>
 }
@@ -46,7 +48,10 @@ namespace MediaCloud {
 		Decoder();
 		~Decoder();
 		
-		void playAudioFile(File*, int);
+		void playAudioFile(File*, int, int*);
+		
+	protected:
+		AVFormatContext* container;
 	};
 
 }
