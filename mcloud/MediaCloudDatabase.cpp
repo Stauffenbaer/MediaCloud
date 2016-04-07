@@ -150,3 +150,32 @@ std::vector<std::string> Database::GetAlben()
 	
 	return alben;
 }
+
+std::vector<Track> Database::GetTracksFromAlbum(std::string album)
+{
+	std::vector<Track> tracks = std::vector<Track>();
+	
+	std::stringstream query = std::stringstream();
+	query << "SELECT * FROM tbl_music WHERE album='";
+	query << album << "'";
+	Result *res = this->query(query.str());
+	
+	for(int i = 0;i < res->rows; ++i) {
+		Track t = Track();
+		query = std::stringstream();
+		query << "SELECT path FROM tbl_files WHERE ID='";
+		query << res->data[i].columns[1] << "'";
+		Result *res2 = this->query(query.str());
+		t.ID = atoi(res->data[i].columns[0].c_str());
+		t.path = res2->data[0].columns[0];
+		t.title = res->data[i].columns[2];
+		t.artist = res->data[i].columns[3];
+		t.album = res->data[i].columns[4];
+		t.tracknumber = atoi(res->data[i].columns[5].c_str());
+		t.duration = atoi(res->data[i].columns[6].c_str());
+		
+		tracks.push_back(t);
+	}
+	
+	return tracks;
+}

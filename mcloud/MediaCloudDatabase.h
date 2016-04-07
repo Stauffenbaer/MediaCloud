@@ -54,6 +54,18 @@ namespace MediaCloud {
 		
 		std::vector<ResultRow> data;
 	};
+	
+	struct Track
+	{
+		int ID;
+		std::string path;
+		
+		std::string title;
+		std::string artist;
+		std::string album;
+		std::string duration;
+		int tracknumber;
+	};
 
 	class Database
 	{
@@ -69,6 +81,7 @@ namespace MediaCloud {
 		Result* query(std::string);
 		
 		std::vector<std::string> GetAlben();
+		std::vector<Track> GetTracksFromAlbum(std::string);
 		
 	protected:
 		sqlite3 *db;
