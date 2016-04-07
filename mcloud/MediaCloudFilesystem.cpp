@@ -72,7 +72,6 @@ void Filesystem::registerFile(std::string path)
 	query << type << "')";
 	db->query(query.str());
 	
-	std::cout << type << std::endl;
 	if (type == "audio") {
 		
 		TagData *data = this->getMetaData(path);
@@ -94,8 +93,8 @@ void Filesystem::registerFile(std::string path)
 			query << data->title << "', '";
 			query << data->artist << "', '";
 			query << data->album << "', '";
-			query << 0 << "', '"; //TODO: improve!
-			query << 0 << "')"; //TODO: improve!
+			query << data->tracknumber << "', '";
+			query << data->duration << "')";
 			
 			db->query(query.str());
 		}
@@ -220,11 +219,18 @@ Filesystem::TagData* Filesystem::getMetaData(std::string path)
 	AVDictionaryEntry *title = av_dict_get(metadata, "title", 0, 0);
 	AVDictionaryEntry *artist = av_dict_get(metadata, "artist", 0, 0);
 	AVDictionaryEntry *album = av_dict_get(metadata, "album", 0, 0);
+	AVDictionaryEntry *tracknr = av_dict_get(metadata, "track", 0, 0);
+	
+	avformat_find_stream_info(container, 0);
+	int64_t duration = floor(container->duration / (1000 * 1000)) + 1;
 	
 	TagData *data = new TagData();
 	data->title = std::string(title->value);
 	data->artist = std::string(artist->value);
 	data->album = std::string(album->value);
+	data->tracknumber = atoi(tracknr->value);
+	data->duration = duration;
 	
+	avformat_free_context(container);
 	return data;
 }

@@ -29,6 +29,7 @@ SOFTWARE.
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <cstdio>
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/foreach.hpp>
@@ -45,9 +46,6 @@ extern "C" {
 	
 	#include <ao/ao.h>
 }
-
-#include <id3/tag.h>
-#include <id3/id3lib_frame.h>
 
 namespace MediaCloud {
 
