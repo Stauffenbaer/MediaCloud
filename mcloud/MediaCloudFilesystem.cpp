@@ -61,6 +61,9 @@ bool Filesystem::fileRegistered(std::string path)
 
 void Filesystem::registerFile(std::string path)
 {
+	if (boost::filesystem::path(path).filename().c_str()[0] == '.')
+		return;
+	
 	if (this->fileRegistered(path))
 		return;
 	
@@ -225,10 +228,27 @@ Filesystem::TagData* Filesystem::getMetaData(std::string path)
 	int64_t duration = floor(container->duration / (1000 * 1000)) + 1;
 	
 	TagData *data = new TagData();
-	data->title = std::string(title->value);
-	data->artist = std::string(artist->value);
-	data->album = std::string(album->value);
-	data->tracknumber = atoi(tracknr->value);
+	
+	if (title)
+		data->title = std::string(title->value);
+	else
+		data->title = "";
+	
+	if (artist)
+		data->artist = std::string(artist->value);
+	else
+		data->artist = "";
+	
+	if (album)
+		data->album = std::string(album->value);
+	else
+		data->album = "";
+	
+	if (tracknr)
+		data->tracknumber = atoi(tracknr->value);
+	else
+		data->tracknumber = 0;
+	
 	data->duration = duration;
 	
 	avformat_free_context(container);

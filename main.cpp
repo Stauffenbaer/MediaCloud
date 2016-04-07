@@ -33,5 +33,6 @@ int main(int argc, char **argv)
 	server->settings->SetValue(MCD_ENTRY_ROOT_DIRECTORY, "/home/julian/Musik");
 	server->filesystem->registerDirectory(*server->settings->GetValue(MCD_ENTRY_ROOT_DIRECTORY));
 	
+	delete server;
 	return 0;
 }
