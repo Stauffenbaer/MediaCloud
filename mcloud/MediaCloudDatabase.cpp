@@ -75,7 +75,11 @@ std::string Database::calculateSHA1(char *data, size_t length)
 
 bool Database::registerUser(std::string username, std::string password)
 {
-	//TODO: check if username is available
+	std::stringstream query = std::stringstream();
+	query << "SELECT * FROM tbl_users WHERE username='";
+	query << username << "'";
+	if (this->query(query.str())->rows != 0)
+		return false;
 	
 	boost::random::uniform_int_distribution<> usalt(min, max);
 	unsigned long salt = usalt(randomProvider);
@@ -84,7 +88,7 @@ bool Database::registerUser(std::string username, std::string password)
 	std::string pHash = this->calculateSHA1((char*) password.c_str(), (size_t) password.length());
 	std::string p = pHash + saltHash;
 	std::string passwordHash = this->calculateSHA1((char*) p.c_str(), (size_t) p.length());
-	std::stringstream query = std::stringstream();
+	query = std::stringstream();
 	query << "INSERT INTO tbl_users (username, password, salt) VALUES ('";
 	query << username << "', '";
 	query << passwordHash << "', '";
@@ -101,8 +105,23 @@ bool Database::registerUser(std::string username, std::string password)
 
 bool Database::login(std::string username, std::string password)
 {
-	//TODO: implement
-	return false;
+	std::stringstream query = std::stringstream();
+	query << "SELECT * FROM tbl_users WHERE username='";
+	query << username << "'";
+	
+	Result *res = this->query(query.str());
+	
+	if (res->rows == 0)
+		return false;
+	
+	std::string salt = res->data[0].columns[3];
+	std::string correct = res->data[0].columns[2];
+	
+	std::string pre = this->calculateSHA1((char*) password.data(), password.size());
+	std::string conc = pre + salt;
+	std::string hash = this->calculateSHA1((char*) conc.data(), conc.size());
+	
+	return hash == correct;
 }
 
 Result* Database::query(std::string query)
