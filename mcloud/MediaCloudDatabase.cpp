@@ -138,3 +138,15 @@ Result* Database::query(std::string query)
 	res->rows = res->data.size();
 	return res;
 }
+
+std::vector<std::string> Database::GetAlben()
+{
+	std::vector<std::string> alben = std::vector<std::string>();
+	Result *res = this->query("SELECT DISTINCT album FROM tbl_music");
+	
+	for(int i = 0;i < res->rows; ++i) {
+		alben.push_back(res->data[i].columns[0]);
+	}
+	
+	return alben;
+}

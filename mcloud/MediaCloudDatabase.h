@@ -68,6 +68,8 @@ namespace MediaCloud {
 		
 		Result* query(std::string);
 		
+		std::vector<std::string> GetAlben();
+		
 	protected:
 		sqlite3 *db;
 		
