@@ -28,10 +28,6 @@ using namespace MediaCloud;
 
 Decoder::Decoder()
 {
-	av_register_all();
-	
-	ao_initialize();
-	
 	container = avformat_alloc_context();
 }
 
