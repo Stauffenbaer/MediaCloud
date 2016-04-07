@@ -36,6 +36,16 @@ SOFTWARE.
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/filesystem.hpp>
 
+extern "C" {
+	#include <libavutil/mathematics.h>
+	#include <libavcodec/avcodec.h>
+	#include <libavformat/avformat.h>
+	#include <libavutil/avutil.h>
+	#include <libswscale/swscale.h>
+	
+	#include <ao/ao.h>
+}
+
 #include <id3/tag.h>
 #include <id3/id3lib_frame.h>
 
@@ -79,6 +89,16 @@ namespace MediaCloud {
 		
 		void registerAllExtensions();
 		std::vector<ExtensionPair> extensions;
+		
+		struct TagData {
+			std::string title;
+			std::string artist;
+			std::string album;
+			int tracknumber;
+			int duration;
+		};
+		
+		TagData* getMetaData(std::string);
 	};
 
 }

@@ -72,43 +72,11 @@ void Filesystem::registerFile(std::string path)
 	query << type << "')";
 	db->query(query.str());
 	
+	std::cout << type << std::endl;
 	if (type == "audio") {
-		ID3_Tag tag;
-		tag.Link(path.c_str(), ID3TT_ID3V1 | ID3TT_LYRICS3V2 | ID3TT_MUSICMATCH);
 		
-		ID3_Frame *titleFrame = tag.Find(ID3FID_TITLE);
-		ID3_Frame *artistFrame = tag.Find(ID3FID_LEADARTIST);
-		ID3_Frame *albumFrame = tag.Find(ID3FID_ALBUM);
-		ID3_Frame *trackFrame = tag.Find(ID3FID_TRACKNUM);
+		TagData *data = this->getMetaData(path);
 		
-		const Mp3_Headerinfo *header = tag.GetMp3HeaderInfo();
-		long duration = 0;
-		if (header)
-			duration = header->time;
-		
-		const unsigned int size = 1024;
-		
-		char title[size];
-		memset(title, 0, size);
-		char artist[size];
-		memset(artist, 0, size);
-		char album[size];
-		memset(album, 0, size);
-		char track[size];
-		memset(track, 0, size);
-		
-		int tracknr = 0;
-		
-		if (titleFrame)
-			titleFrame->Field(ID3FN_TEXT).Get(title, size);
-		if (artistFrame)
-			artistFrame->Field(ID3FN_TEXT).Get(artist, size);
-		if (albumFrame)
-			albumFrame->Field(ID3FN_TEXT).Get(album, size);
-		if (trackFrame)
-			trackFrame->Field(ID3FN_TEXT).Get(track, size);
-		
-		std::istringstream(std::string(track)) >> tracknr;
 		
 		query = std::stringstream();
 		query << "SELECT ID FROM tbl_files WHERE path='";
@@ -123,11 +91,11 @@ void Filesystem::registerFile(std::string path)
 			query = std::stringstream();
 			query << "INSERT INTO tbl_music (file, title, artist, album, tracknr, duration) VALUES ('";
 			query << fID << "', '";
-			query << title << "', '";
-			query << artist << "', '";
-			query << album << "', '";
-			query << tracknr << "', '";
-			query << duration << "')";
+			query << data->title << "', '";
+			query << data->artist << "', '";
+			query << data->album << "', '";
+			query << 0 << "', '"; //TODO: improve!
+			query << 0 << "')"; //TODO: improve!
 			
 			db->query(query.str());
 		}
@@ -238,4 +206,25 @@ std::vector<File*> Filesystem::getFiles()
 	}
 	
 	return files;
+}
+
+Filesystem::TagData* Filesystem::getMetaData(std::string path)
+{
+	boost::replace_all(path, "&quot", "\'");
+	AVFormatContext *container = avformat_alloc_context();
+	if (avformat_open_input(&container, path.c_str(), 0, 0)) {
+		return 0;
+	}
+	
+	AVDictionary *metadata = container->metadata;
+	AVDictionaryEntry *title = av_dict_get(metadata, "title", 0, 0);
+	AVDictionaryEntry *artist = av_dict_get(metadata, "artist", 0, 0);
+	AVDictionaryEntry *album = av_dict_get(metadata, "album", 0, 0);
+	
+	TagData *data = new TagData();
+	data->title = std::string(title->value);
+	data->artist = std::string(artist->value);
+	data->album = std::string(album->value);
+	
+	return data;
 }

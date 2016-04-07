@@ -7,7 +7,7 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS system filesystem)
 
 set(mcloudSRC MediaCloudSettings.cpp MediaCloudFilesystem.cpp MediaCloudDecoder.cpp MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp MediaCloudDecoder.cpp)
 set(mcloudboost ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-set(mcloudLIBS ${mcloudboost} ao id3 sqlite3 avutil avcodec avformat)
+set(mcloudLIBS ${mcloudboost} ao sqlite3 avutil avcodec avformat)
 
 link_libraries(${mcloudLIBS})
 add_library(mcloud ${mcloudSRC})
