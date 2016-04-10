@@ -33,6 +33,9 @@ int main(int argc, char **argv)
 	server->settings->SetValue(MCD_ENTRY_ROOT_DIRECTORY, "/home/julian/Musik");
 	server->filesystem->registerDirectory(*server->settings->GetValue(MCD_ENTRY_ROOT_DIRECTORY));
 	
+	MediaCloud::File *f = server->filesystem->getFile(1);
+	server->decoder->playAudioFile(f);
+	getchar();
 	delete server;
 	return 0;
 }

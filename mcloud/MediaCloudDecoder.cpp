@@ -28,129 +28,19 @@ using namespace MediaCloud;
 
 Decoder::Decoder()
 {
-	container = avformat_alloc_context();
+	player = new QMediaPlayer();
 }
 
 Decoder::~Decoder()
 {
-	ao_shutdown();
+	delete player;
 }
 
-void Decoder::playAudioFile(File* file, int driver, int* err)
+void Decoder::playAudioFile(File* file)
 {
-	*err = 0;
+	player->setMedia(QUrl::fromLocalFile(file->path.c_str()));
+	player->setVolume(100);
+	player->play();
 	
-	if (driver == -1) {
-		*err = 7;
-		return;
-	}
-	
-	if (file->type != "audio") {
-		*err = -1;
-		return;
-	}
-	
-	if (avformat_open_input(&container, file->path.c_str(), 0, 0) < 0) {
-		*err = -2;
-		return;
-	}
-	
-	int stream = -1;
-	
-	for (int i = 0;i < container->nb_streams; ++i) {
-		if(container->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
-            stream = i;
-            break;
-        }
-	}
-	
-	if (stream == -1) {
-		*err = -3;
-		return;
-	}
-	
-	AVDictionary *metadata = container->metadata;
-	AVCodecContext *ctx = container->streams[stream]->codec;
-    AVCodec *codec = avcodec_find_decoder(ctx->codec_id);
-	
-	if(codec == 0) {
-		*err = 4;
-		return;
-    }
-    
-    if (avcodec_open2(ctx, codec, 0) < 0) {
-		*err = 5;
-		return;
-	}
-	
-    ao_sample_format format;
-    AVSampleFormat sformat = ctx->sample_fmt;
-	
-    if(sformat == AV_SAMPLE_FMT_U8)
-        format.bits = 8;
-    else if(sformat == AV_SAMPLE_FMT_S16)
-        format.bits = 16;
-    else if(sformat == AV_SAMPLE_FMT_S32)
-        format.bits = 32;
-
-    format.channels = ctx->channels;
-    format.rate = ctx->sample_rate;
-    format.byte_format = AO_FMT_NATIVE;
-    format.matrix = 0;
-
-    ao_device *device = ao_open_live(driver, &format, 0);
-	
-	if (device == 0) {
-		*err = 10;
-		
-		switch(errno) {
-			default:
-				break;
-				
-			case AO_ENODRIVER:
-				std::cerr << "No driver corresponding!" << std::endl;
-				break;
-			case AO_ENOTLIVE:
-				std::cerr << "Driver is no live device!" << std::endl;
-				break;
-			case AO_EBADOPTION:
-				std::cerr << "Driver options failure!" << std::endl;
-				break;
-			case AO_EOPENDEVICE:
-				std::cerr << "Cannot open device!" << std::endl;
-				break;
-			case AO_EFAIL:
-				std::cerr << "Driver failure!" << std::endl;
-				break;
-		}
-		
-		return;
-	}
-	
-	
-
-    AVPacket packet;
-    av_init_packet(&packet);
-    AVFrame *frame = avcodec_alloc_frame();
-
-    int buffer_size = boost::filesystem::file_size(boost::filesystem::path(file->path));
-    uint8_t buffer[buffer_size];
-    packet.data = buffer;
-    packet.size = buffer_size;
-	
-    while (av_read_frame(container, &packet) >= 0)
-    {
-        if (packet.stream_index != stream)
-			continue;
-		
-		int finished = 0;
- 		int len = avcodec_decode_audio4(ctx, frame, &finished, &packet);
-		
-		if (ao_play(device, (char*)frame->extended_data[0], frame->linesize[0]) == 0) {
-			*err = 6;
-			return;
-		}
-    }
-    
-    ao_close(device);
+	while(player->isAudioAvailable()) ;
 }

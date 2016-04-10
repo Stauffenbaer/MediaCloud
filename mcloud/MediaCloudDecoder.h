@@ -26,15 +26,7 @@ SOFTWARE.
 
 #include "MediaCloudFilesystem.h"
 
-extern "C" {
-	#include <libavutil/mathematics.h>
-	#include <libavcodec/avcodec.h>
-	#include <libavformat/avformat.h>
-	#include <libavutil/avutil.h>
-	#include <libswscale/swscale.h>
-	
-	#include <ao/ao.h>
-}
+#include <qt5/QtMultimedia/QMediaPlayer>
 
 #include <iostream>
 #include <boost/filesystem.hpp>
@@ -49,10 +41,10 @@ namespace MediaCloud {
 		Decoder();
 		~Decoder();
 		
-		void playAudioFile(File*, int, int*);
+		void playAudioFile(File*);
 		
 	protected:
-		AVFormatContext* container;
+		QMediaPlayer *player;
 	};
 
 }

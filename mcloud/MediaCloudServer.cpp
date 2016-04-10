@@ -31,8 +31,6 @@ Server::Server()
 	av_register_all();
 	av_log_set_level(AV_LOG_ERROR);
 	
-	ao_initialize();
-	
 	database = new Database();
 	filesystem = new Filesystem(database);
 	settings = new Settings(database);
