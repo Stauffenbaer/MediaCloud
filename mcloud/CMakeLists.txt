@@ -18,6 +18,7 @@ set(mcloudboost ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LI
 set(mcloudLIBS ${mcloudboost} ao sqlite3 avutil avcodec avformat)
 
 add_library(mcloud ${mcloudSRC})
+target_link_libraries(mcloud security)
 target_link_libraries(mcloud Qt5::Widgets Qt5::Multimedia)
 target_link_libraries(mcloud ${mcloudLIBS})
 
