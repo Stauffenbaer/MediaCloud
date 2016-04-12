@@ -24,57 +24,37 @@ SOFTWARE.
 
 #pragma once
 
-#include <sstream>
-#include <string>
-#include <sqlite3.h>
-#include <functional>
-#include <array>
+#include "../MediaCloudDatabase.h"
 
 #include <boost/random.hpp>
 #include <boost/uuid/sha1.hpp>
 
-namespace MediaCloud {	
-	struct ResultRow 
-	{
-		std::vector<std::string> columns;
-	};
-	
-	struct Result
-	{
-		size_t rows = 0;
-		size_t columns = 0;
-		
-		std::vector<ResultRow> data;
-	};
-	
-	struct Track
-	{
-		int ID;
-		std::string path;
-		
-		std::string title;
-		std::string artist;
-		std::string album;
-		std::string duration;
-		int tracknumber;
-	};
+namespace MediaCloud {
 
-	class Database
+	std::string sha1(char*, size_t);
+	std::string sha1(std::string);
+	
+	size_t random(size_t, size_t);
+	
+	struct LoginToken {
+		char *data;
+		size_t length;
+	};
+	
+	class LoginProvider
 	{
 	public:
-		Database();
-		~Database();
-				
-		Result* query(std::string);
+		LoginProvider(Database*);
+		~LoginProvider();
 		
-		std::vector<std::string> GetAlben();
-		std::vector<Track> GetTracksFromAlbum(std::string);
+		LoginToken* Login(std::string, std::string);
+		LoginToken* Register(std::string, std::string);
 		
 	protected:
-		sqlite3 *db;
+		Database *db;
 		
 	private:
-		const std::string& filename = "data/mediacloud.db";
+		LoginToken createToken(int);
 	};
 
 }

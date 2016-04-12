@@ -28,10 +28,6 @@ using namespace MediaCloud;
 
 Database::Database()
 {
-	max = pow10(saltLength) - 1;
-	min = max / 9;
-	
-	hashProvider = boost::uuids::detail::sha1();
 	sqlite3_open(this->filename.c_str(), &this->db);
 	
 	this->query("CREATE TABLE IF NOT EXISTS tbl_users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, salt TEXT)");
@@ -43,85 +39,6 @@ Database::Database()
 Database::~Database()
 {
 	sqlite3_close(this->db);
-}
-
-std::string Database::calculateSHA1(char *data, size_t length)
-{
-	hashProvider.reset();
-	char hash[20];
-	hashProvider.process_bytes(data, length);
-	
-	unsigned int digest[5];
-	hashProvider.get_digest(digest);
-	
-	for(int i = 0; i < 5; ++i)
-	{
-		const char* tmp = reinterpret_cast<char*>(digest);
-		hash[4 * i + 0] = tmp[4 * i + 3];
-		hash[4 * i + 1] = tmp[4 * i + 2];
-		hash[4 * i + 2] = tmp[4 * i + 1];
-		hash[4 * i + 3] = tmp[4 * i + 0];
-	}
-	
-	std::stringstream stream = std::stringstream();
-	
-	for(int i = 0; i < 20; ++i)
-    {
-        stream << std::hex << ((hash[i] & 0x000000F0) >> 4) <<  (hash[i] & 0x0000000F);
-    }
-    
-    return stream.str();
-}
-
-bool Database::registerUser(std::string username, std::string password)
-{
-	std::stringstream query = std::stringstream();
-	query << "SELECT * FROM tbl_users WHERE username='";
-	query << username << "'";
-	if (this->query(query.str())->rows != 0)
-		return false;
-	
-	boost::random::uniform_int_distribution<> usalt(min, max);
-	unsigned long salt = usalt(randomProvider);
-	
-	std::string saltHash = this->calculateSHA1((char*) &salt, sizeof(unsigned long));
-	std::string pHash = this->calculateSHA1((char*) password.c_str(), (size_t) password.length());
-	std::string p = pHash + saltHash;
-	std::string passwordHash = this->calculateSHA1((char*) p.c_str(), (size_t) p.length());
-	query = std::stringstream();
-	query << "INSERT INTO tbl_users (username, password, salt) VALUES ('";
-	query << username << "', '";
-	query << passwordHash << "', '";
-	query << saltHash << "')";
-	
-	int r = sqlite3_exec(this->db, query.str().c_str(), 0, 0, 0);
-	if (r != 0) {
-		std::cerr << r << ": " << sqlite3_errmsg(this->db) << std::endl;
-		return false;
-	}
-	
-	return true;
-}
-
-bool Database::login(std::string username, std::string password)
-{
-	std::stringstream query = std::stringstream();
-	query << "SELECT * FROM tbl_users WHERE username='";
-	query << username << "'";
-	
-	Result *res = this->query(query.str());
-	
-	if (res->rows == 0)
-		return false;
-	
-	std::string salt = res->data[0].columns[3];
-	std::string correct = res->data[0].columns[2];
-	
-	std::string pre = this->calculateSHA1((char*) password.data(), password.size());
-	std::string conc = pre + salt;
-	std::string hash = this->calculateSHA1((char*) conc.data(), conc.size());
-	
-	return hash == correct;
 }
 
 Result* Database::query(std::string query)
