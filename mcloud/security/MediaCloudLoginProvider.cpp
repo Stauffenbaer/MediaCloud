@@ -98,11 +98,12 @@ size_t random(size_t min, size_t max)
 LoginProvider::LoginProvider(Database *database)
 {
 	db = database;
+	perm = new PermissionProvider(database);
 }
 
 LoginProvider::~LoginProvider()
 {
-	
+	delete perm;
 }
 
 LoginToken* LoginProvider::Login(std::string username, std::string password)
@@ -131,16 +132,24 @@ LoginToken* LoginProvider::Login(std::string username, std::string password)
 
 LoginToken* LoginProvider::Register(std::string username, std::string password)
 {
+	std::stringstream query = std::stringstream();
+	query << "SELECT ID FROM tbl_users WHERE username='";
+	query << username << "'";
+	if (db->query(query.str())->rows != 0)
+		return 0;
+	
 	size_t rand = random(11111111, 99999999);
 	std::string hash = sha1((char *) &rand, sizeof(rand));
 	std::string passwordHash = sha1(password);
 	
-	std::stringstream query = std::stringstream();
+	query = std::stringstream();
 	query << "INSERT INTO tbl_users (username, password, salt) VALUES ('";
 	query << username << "', '";
 	query << sha1(passwordHash + hash) << "', '";
 	query << hash << "')";
 	db->query(query.str());
+	
+	perm->registerUser(username);
 	
 	return this->Login(username, password);
 }

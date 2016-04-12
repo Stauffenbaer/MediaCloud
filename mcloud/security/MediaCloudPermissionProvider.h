@@ -25,43 +25,27 @@ SOFTWARE.
 #pragma once
 
 #include "../MediaCloudDatabase.h"
-#include "MediaCloudPermissionProvider.h"
 
-#include <boost/random.hpp>
-#include <boost/uuid/sha1.hpp>
+#include <sstream>
 
 namespace MediaCloud {
 
-	std::string sha1(char*, size_t);
-	std::string sha1(std::string);
-	
-	size_t random(size_t, size_t);
-	
-	struct LoginToken {
-		char *data;
-		size_t length;
-		
-		std::string str()
-		{
-			return std::string(data, length);
-		}
+	struct PermissionSet {
+		unsigned int level = 0;
+		std::string name = "";
 	};
 	
-	class LoginProvider
+	class PermissionProvider
 	{
 	public:
-		LoginProvider(Database*);
-		~LoginProvider();
+		PermissionProvider(Database*);
+		~PermissionProvider();
 		
-		LoginToken* Login(std::string, std::string);
-		LoginToken* Register(std::string, std::string);
+		void registerUser(std::string);
+		void setPermissionLevel(std::string, PermissionSet);
 		
 	protected:
 		Database *db;
-		PermissionProvider *perm;
-		
-	private:
-		LoginToken createToken(int);
 	};
 
 }

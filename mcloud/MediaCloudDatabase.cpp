@@ -33,7 +33,8 @@ Database::Database()
 	this->query("CREATE TABLE IF NOT EXISTS tbl_users (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, salt TEXT)");
 	this->query("CREATE TABLE IF NOT EXISTS tbl_files (ID INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, type TEXT)");
 	this->query("CREATE TABLE IF NOT EXISTS tbl_settings (ID INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value TEXT)");
-	this->query("CREATE TABLE IF NOT EXISTS tbl_music (ID INTEGER PRIMARY KEY AUTOINCREMENT, file INTEGER, title TEXT, artist TEXT, album TEXT, tracknr INT, duration INT)");	
+	this->query("CREATE TABLE IF NOT EXISTS tbl_music (ID INTEGER PRIMARY KEY AUTOINCREMENT, file INTEGER, title TEXT, artist TEXT, album TEXT, tracknr INT, duration INT)");
+	this->query("CREATE TABLE IF NOT EXISTS tbl_perm (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, level INT(8), name TEXT)");
 }
 
 Database::~Database()

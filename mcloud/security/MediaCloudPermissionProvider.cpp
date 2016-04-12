@@ -22,46 +22,34 @@ SOFTWARE.
 
 */
 
-#pragma once
-
-#include "../MediaCloudDatabase.h"
 #include "MediaCloudPermissionProvider.h"
 
-#include <boost/random.hpp>
-#include <boost/uuid/sha1.hpp>
+using namespace MediaCloud;
 
-namespace MediaCloud {
+PermissionProvider::PermissionProvider(Database *database)
+{
+	db = database;
+}
 
-	std::string sha1(char*, size_t);
-	std::string sha1(std::string);
-	
-	size_t random(size_t, size_t);
-	
-	struct LoginToken {
-		char *data;
-		size_t length;
-		
-		std::string str()
-		{
-			return std::string(data, length);
-		}
-	};
-	
-	class LoginProvider
-	{
-	public:
-		LoginProvider(Database*);
-		~LoginProvider();
-		
-		LoginToken* Login(std::string, std::string);
-		LoginToken* Register(std::string, std::string);
-		
-	protected:
-		Database *db;
-		PermissionProvider *perm;
-		
-	private:
-		LoginToken createToken(int);
-	};
+PermissionProvider::~PermissionProvider()
+{
 
+}
+
+void PermissionProvider::registerUser(std::string username)
+{
+	std::stringstream query = std::stringstream();
+	query << "INSERT INTO tbl_perm (username, level, name) VALUES ('" << username << "', '0', 'default')";
+	db->query(query.str());
+}
+
+void PermissionProvider::setPermissionLevel(std::string username, PermissionSet set)
+{
+	std::stringstream query = std::stringstream();
+	query << "UPDATE tbl_perm SET level='" << set.level << "' WHERE username='" << username << "'";
+	db->query(query.str());
+	
+	query = std::stringstream();
+	query << "UPDATE tbl_perm SET name='" << set.name << "' WHERE username='" << username << "'";
+	db->query(query.str());
 }

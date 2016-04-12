@@ -5,7 +5,7 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.58.0 REQUIRED COMPONENTS system filesystem)
 
-set(src MediaCloudLoginProvider.cpp)
+set(src MediaCloudLoginProvider.cpp MediaCloudPermissionProvider.cpp)
 set(boostlibs ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 set(libs ${boostlibs} ao sqlite3 avutil avcodec avformat)
 
