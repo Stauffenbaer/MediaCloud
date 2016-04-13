@@ -26,7 +26,8 @@ SOFTWARE.
 
 using namespace MediaCloud;
 
-Server::Server()
+Server::Server(boost::asio::io_service& io_service)
+	: ios(io_service)
 {
 	av_register_all();
 	av_log_set_level(AV_LOG_ERROR);
@@ -36,6 +37,14 @@ Server::Server()
 	settings = new Settings(database);
 	decoder = new Decoder();
 	login = new LoginProvider(database);
+	
+	boost::asio::ssl::context ctx(boost::asio::ssl::context::sslv23);
+	
+	this->controlsocket = new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(ios, ctx);
+	this->datasocket = new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(ios, ctx);
+	
+	this->controlacceptor = new boost::asio::ip::tcp::acceptor(ios, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), controlport));
+	this->dataacceptor = new boost::asio::ip::tcp::acceptor(ios, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), dataport));
 }
 
 Server::~Server()

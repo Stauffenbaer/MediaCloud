@@ -26,16 +26,15 @@ SOFTWARE.
 
 #include "mcloud/MediaCloudServer.h"
 
+#include <boost/asio.hpp>
+
 int main(int argc, char **argv) 
 {
-	MediaCloud::Server *server = new MediaCloud::Server();
+	boost::asio::io_service serv;
+	MediaCloud::Server *server = new MediaCloud::Server(serv);
 	
-	server->settings->SetValue(MCD_ENTRY_ROOT_DIRECTORY, "/home/julian/Musik");
-	server->filesystem->registerDirectory(*server->settings->GetValue(MCD_ENTRY_ROOT_DIRECTORY));
+	serv.run();
 	
-	MediaCloud::File *f = server->filesystem->getFile(1);
-	server->decoder->playAudioFile(f);
-	getchar();
 	delete server;
 	return 0;
 }

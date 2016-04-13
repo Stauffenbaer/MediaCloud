@@ -15,7 +15,7 @@ include_directories(${QT_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
 
 set(mcloudSRC MediaCloudSettings.cpp MediaCloudFilesystem.cpp MediaCloudDecoder.cpp MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp MediaCloudDecoder.cpp)
 set(mcloudboost ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-set(mcloudLIBS ${mcloudboost} ao sqlite3 avutil avcodec avformat)
+set(mcloudLIBS ${mcloudboost} ao sqlite3 avutil avcodec avformat ssl crypto)
 
 add_library(mcloud ${mcloudSRC})
 target_link_libraries(mcloud security)

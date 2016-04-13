@@ -30,12 +30,16 @@ SOFTWARE.
 #include "MediaCloudDecoder.h"
 #include "security/MediaCloudLoginProvider.h"
 
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/asio/ssl.hpp>
+
 namespace MediaCloud {
 
 	class Server
 	{
 	public:
-		Server();
+		Server(boost::asio::io_service&);
 		~Server();
 		
 		Database* database;
@@ -43,6 +47,18 @@ namespace MediaCloud {
 		Settings *settings;
 		Decoder* decoder;
 		LoginProvider *login;
+		
+	protected:
+		boost::asio::io_service& ios;
+		boost::asio::ssl::stream<boost::asio::ip::tcp::socket> *controlsocket;
+		boost::asio::ssl::stream<boost::asio::ip::tcp::socket> *datasocket;
+		
+		boost::asio::ip::tcp::acceptor *controlacceptor;
+		boost::asio::ip::tcp::acceptor *dataacceptor;
+		
+	private:
+		const unsigned short& controlport = 1712;
+		const unsigned short& dataport = 1713;
 	};
 
 }
