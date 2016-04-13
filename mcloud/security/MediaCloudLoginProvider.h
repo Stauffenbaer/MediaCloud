@@ -27,24 +27,19 @@ SOFTWARE.
 #include "../MediaCloudDatabase.h"
 #include "MediaCloudPermissionProvider.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+
 #include <boost/random.hpp>
 #include <boost/uuid/sha1.hpp>
 
 namespace MediaCloud {
-
-	std::string sha1(char*, size_t);
-	std::string sha1(std::string);
-	
-	size_t random(size_t, size_t);
 	
 	struct LoginToken {
 		char *data;
 		size_t length;
-		
-		std::string str()
-		{
-			return std::string(data, length);
-		}
+		std::string string;
 	};
 	
 	class LoginProvider
@@ -60,8 +55,13 @@ namespace MediaCloud {
 		Database *db;
 		PermissionProvider *perm;
 		
+		std::string sha1(char*, size_t);
+		std::string sha1(std::string);
+	
+		size_t random(size_t, size_t);
+		
 	private:
-		LoginToken createToken(int);
+		LoginToken* createToken(int);
 	};
 
 }

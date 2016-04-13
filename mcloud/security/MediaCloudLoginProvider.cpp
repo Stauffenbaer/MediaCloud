@@ -26,7 +26,7 @@ SOFTWARE.
 
 using namespace MediaCloud;
 
-std::string sha1(char *buffer, size_t length)
+std::string LoginProvider::sha1(char *buffer, size_t length)
 {
 	boost::uuids::detail::sha1 hashProvider;
 	
@@ -55,7 +55,7 @@ std::string sha1(char *buffer, size_t length)
     return stream.str();
 }
 
-std::string sha1(std::string string)
+std::string LoginProvider::sha1(std::string string)
 {
 	char *buffer = (char *) string.c_str();
 	size_t length = string.size();
@@ -87,12 +87,17 @@ std::string sha1(std::string string)
     return stream.str();
 }
 
-size_t random(size_t min, size_t max)
+size_t LoginProvider::random(size_t min, size_t max)
 {
-	boost::random::mt19937 randomProvider;
-	boost::random::uniform_int_distribution<> usalt(min, max);
+	typedef boost::mt19937 rng_t;
+	rng_t rng(time(0));
 	
-	return usalt(randomProvider);
+	boost::uniform_int<> r(min, max);
+	boost::variate_generator<rng_t, boost::uniform_int<>> k(rng, r);
+	
+	size_t n = k();
+	
+	return n;
 }
 
 LoginProvider::LoginProvider(Database *database)
@@ -123,11 +128,7 @@ LoginToken* LoginProvider::Login(std::string username, std::string password)
 	if (passwordHash != res->data[0].columns[1])
 		return 0;
 	
-	LoginToken token = this->createToken(32);
-	LoginToken *tok = new LoginToken();
-	memcpy(tok, &token, sizeof(token));
-	
-	return tok;
+	return this->createToken(16);
 }
 
 LoginToken* LoginProvider::Register(std::string username, std::string password)
@@ -154,16 +155,17 @@ LoginToken* LoginProvider::Register(std::string username, std::string password)
 	return this->Login(username, password);
 }
 
-LoginToken LoginProvider::createToken(int security)
+LoginToken* LoginProvider::createToken(int security)
 {
-	size_t max = pow10(security) - 1;
+	size_t max = (pow10(security)) - 1;
 	size_t min = max / 9;
 	size_t rand = random(min, max);
 	std::string hash = sha1((char *) &rand, sizeof(rand));
 	
-	LoginToken token;
-	token.data = (char *) hash.c_str();
-	token.length = sizeof(token.data);
+	LoginToken *token = new LoginToken();
+	token->data = (char *) hash.c_str();
+	token->length = sizeof(token->data);
+	token->string = hash;
 	
 	return token;
 }

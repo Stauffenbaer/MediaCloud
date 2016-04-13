@@ -35,6 +35,7 @@ Server::Server()
 	filesystem = new Filesystem(database);
 	settings = new Settings(database);
 	decoder = new Decoder();
+	login = new LoginProvider(database);
 }
 
 Server::~Server()
@@ -43,4 +44,5 @@ Server::~Server()
 	delete filesystem;
 	delete settings;
 	delete decoder;
+	delete login;
 }

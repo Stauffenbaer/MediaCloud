@@ -28,6 +28,7 @@ SOFTWARE.
 #include "MediaCloudDatabase.h"
 #include "MediaCloudSettings.h"
 #include "MediaCloudDecoder.h"
+#include "security/MediaCloudLoginProvider.h"
 
 namespace MediaCloud {
 
@@ -41,6 +42,7 @@ namespace MediaCloud {
 		Filesystem *filesystem;
 		Settings *settings;
 		Decoder* decoder;
+		LoginProvider *login;
 	};
 
 }
