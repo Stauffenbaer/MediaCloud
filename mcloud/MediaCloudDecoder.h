@@ -44,9 +44,14 @@ namespace MediaCloud {
 		~Decoder();
 		
 		void playAudioFile(File*);
+		void setVolume(float);
+		
+		void proceed();
+		void pause();
+		void stop();
 		
 	protected:
-		
+		GstElement *play;
 	private:
 		static gboolean bus_call(GstBus*, GstMessage*, gpointer);
 	};
