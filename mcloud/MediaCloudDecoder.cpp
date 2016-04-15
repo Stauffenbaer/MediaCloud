@@ -38,9 +38,7 @@ Decoder::~Decoder()
 
 void Decoder::playAudioFile(File* file)
 {
-	player->setMedia(QUrl::fromLocalFile(file->path.c_str()));
-	player->setVolume(100);
-	player->play();
-	
-	while(player->isAudioAvailable()) ;
+	std::stringstream str = std::stringstream();
+	str << "gst-launch-1.0 uridecodebin uri=file://\"" << file->path << "\" ! queue ! autoaudiosink";
+	system(str.str().c_str());
 }
