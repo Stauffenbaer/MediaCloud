@@ -51,14 +51,14 @@ namespace MediaCloud {
 		LoginToken* Login(std::string, std::string);
 		LoginToken* Register(std::string, std::string);
 		
+		static std::string sha1(char*, size_t);
+		static std::string sha1(std::string);
+		
+		static size_t random(size_t, size_t);
+		
 	protected:
 		Database *db;
 		PermissionProvider *perm;
-		
-		std::string sha1(char*, size_t);
-		std::string sha1(std::string);
-	
-		size_t random(size_t, size_t);
 		
 	private:
 		LoginToken* createToken(int);

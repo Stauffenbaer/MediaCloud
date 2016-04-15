@@ -26,7 +26,9 @@ SOFTWARE.
 
 #include "MediaCloudFilesystem.h"
 
-#include <qt5/QtMultimedia/QMediaPlayer>
+extern "C" {
+#include <gst/gst.h>
+}
 
 #include <iostream>
 #include <boost/filesystem.hpp>
@@ -44,7 +46,9 @@ namespace MediaCloud {
 		void playAudioFile(File*);
 		
 	protected:
-		QMediaPlayer *player;
+		
+	private:
+		static gboolean bus_call(GstBus*, GstMessage*, gpointer);
 	};
 
 }
