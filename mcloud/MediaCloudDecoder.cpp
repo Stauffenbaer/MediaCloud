@@ -29,81 +29,69 @@ using namespace MediaCloud;
 Decoder::Decoder()
 {
 	gst_init(0, 0);
-	play = gst_element_factory_make ("playbin", "play");
+ 	pipeline = gst_parse_launch("playbin", NULL);
 }
 
 Decoder::~Decoder()
 {
-	
+	gst_object_unref(pipeline);
 }
 
 void Decoder::playAudioFile(File* file)
 {
-	std::stringstream str = std::stringstream();
-	str << "file://" << file->path;
-	GMainLoop *loop;
+	GstPad *pad, *ghost_pad;
 	GstBus *bus;
+	GstMessage *msg;
 	
-	gst_init (0, 0);
-	loop = g_main_loop_new(NULL, FALSE);
+	gst_init(0, 0);
 	
-	g_object_set(G_OBJECT (play), "uri", str.str().c_str(), NULL);
+	std::stringstream s = std::stringstream();
+	s << "file://" << file->path;
+	g_object_set(G_OBJECT(pipeline), "uri", s.str().c_str(), NULL);
 	
-	bus = gst_pipeline_get_bus(GST_PIPELINE(play));
-	gst_bus_add_watch(bus, bus_call, loop);
+	equalizer = gst_element_factory_make("equalizer-3bands", "equalizer");
+	convert = gst_element_factory_make("audioconvert", "convert");
+	sink = gst_element_factory_make("autoaudiosink", "audio_sink");
+	
+	bin = gst_bin_new("audio_sink_bin");
+	gst_bin_add_many(GST_BIN (bin), equalizer, convert, sink, NULL);
+	gst_element_link_many(equalizer, convert, sink, NULL);
+	pad = gst_element_get_static_pad(equalizer, "sink");
+	ghost_pad = gst_ghost_pad_new("sink", pad);
+	gst_pad_set_active(ghost_pad, TRUE);
+	gst_element_add_pad(bin, ghost_pad);
+	gst_object_unref(pad);
+	
+	g_object_set(GST_OBJECT (pipeline), "audio-sink", bin, NULL);
+	
+	gst_element_set_state(pipeline, GST_STATE_PLAYING);
+	
+	bus = gst_element_get_bus(pipeline);
+	GstMessageType msgType = (GstMessageType) (GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+	msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, msgType );
+	
+	if (msg != NULL)
+		gst_message_unref(msg);
 	gst_object_unref(bus);
-	
-	gst_element_set_state(play, GST_STATE_PLAYING);
-	
-	g_main_loop_run(loop);
-	
-	gst_element_set_state(play, GST_STATE_NULL);
-	gst_object_unref (GST_OBJECT(play));
-}
-
-gboolean Decoder::bus_call(GstBus *bus, GstMessage *msg, gpointer data)
-{
-	GMainLoop *loop = (GMainLoop *) data;
-	
-	switch(GST_MESSAGE_TYPE (msg)) {
-		case GST_MESSAGE_EOS:
-			g_main_loop_quit(loop);
-			break;
-		case GST_MESSAGE_ERROR:
-			g_main_loop_quit(loop);
-			break;
-		case GST_MESSAGE_UNKNOWN:
-			g_main_loop_quit(loop);
-			break;
-		case GST_MESSAGE_STATE_DIRTY:
-			g_main_loop_quit(loop);
-			break;
-		case GST_MESSAGE_STATE_CHANGED:
-			g_main_loop_quit(loop);
-			break;
-		default:
-			break;
-	}
-	
-	return true;
+	gst_element_set_state(pipeline, GST_STATE_NULL);
 }
 
 void Decoder::setVolume(float v)
 {
-	g_object_set(G_OBJECT(play), "volume", v, NULL);
+	g_object_set(G_OBJECT(pipeline), "volume", v, NULL);
 }
 
-void Decoder::proceed()
+void Decoder::pauseAudio()
 {
-	gst_element_set_state(play, GST_STATE_PLAYING);
+	gst_element_set_state(pipeline, GST_STATE_PAUSED);
 }
 
-void Decoder::pause()
+void Decoder::continueAudio()
 {
-	gst_element_set_state(play, GST_STATE_PAUSED);
+	gst_element_set_state(pipeline, GST_STATE_PLAYING);
 }
 
-void Decoder::stop()
+void Decoder::stopAudio()
 {
-	gst_element_set_state(play, GST_STATE_NULL);
+	gst_element_set_state(pipeline, GST_STATE_NULL);
 }

@@ -33,6 +33,7 @@ extern "C" {
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/thread.hpp>
 #include <cerrno>
 
 namespace MediaCloud {
@@ -44,16 +45,14 @@ namespace MediaCloud {
 		~Decoder();
 		
 		void playAudioFile(File*);
+		
 		void setVolume(float);
+		void pauseAudio();
+		void continueAudio();
+		void stopAudio();
 		
-		void proceed();
-		void pause();
-		void stop();
-		
-	protected:
-		GstElement *play;
 	private:
-		static gboolean bus_call(GstBus*, GstMessage*, gpointer);
+		GstElement *pipeline, *bin, *equalizer, *convert, *sink;
 	};
 
 }

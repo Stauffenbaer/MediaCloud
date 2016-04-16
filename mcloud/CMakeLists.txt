@@ -1,9 +1,9 @@
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -fpermissive)
 
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.55.0 REQUIRED COMPONENTS system filesystem)
+find_package(Boost 1.55.0 REQUIRED COMPONENTS system filesystem thread)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
