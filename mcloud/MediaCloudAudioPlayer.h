@@ -66,7 +66,7 @@ namespace MediaCloud {
 		bool finished;
 		boost::thread audioThread;
 		
-		static void audio_func(playerArgs);
+		static void audio_func(playerArgs*);
 	};
 
 }

@@ -76,8 +76,6 @@ AudioProvider::AudioProvider(Database *database, Filesystem *filesystem)
 
 AudioProvider::~AudioProvider()
 {
-	delete db;
-	delete fs;
 	delete player;
 }
 
@@ -85,7 +83,7 @@ std::vector<Album> AudioProvider::GetAlben()
 {
 	std::vector<Album> albums = std::vector<Album>();
 	
-	Result *res = db->query("SELECT DISTINCT album FROM tbl_music");
+	Result *res = db->query("SELECT DISTINCT album FROM tbl_music ORDER BY album");
 	
 	std::stringstream query;
 	for(int i = 0;i < res->rows; ++i) {

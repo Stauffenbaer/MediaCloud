@@ -56,7 +56,7 @@ void AudioPlayer::setMedia(std::string file)
 void AudioPlayer::play()
 {
 	finished = false;
-	audioThread = boost::thread(audio_func, args);
+	audioThread = boost::thread(audio_func, &args);
 }
 
 void AudioPlayer::setPlaying()
@@ -81,8 +81,8 @@ void AudioPlayer::setVolume(float v)
 	decoder->setVolume(v);
 }
 
-void AudioPlayer::audio_func(playerArgs args)
+void AudioPlayer::audio_func(playerArgs *args)
 {
-	args.decoder->playAudioFile(args.file);
-	*(args.finished) = true;
+	args->decoder->playAudioFile(args->file);
+	*(args->finished) = true;
 }

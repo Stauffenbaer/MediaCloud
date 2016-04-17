@@ -35,12 +35,6 @@ Decoder::Decoder()
 Decoder::~Decoder()
 {
 	gst_object_unref(pipeline);
-	
-	delete pipeline;
-	delete bin;
-	delete equalizer;
-	delete convert;
-	delete sink;
 }
 
 void Decoder::playAudioFile(std::string path)
@@ -80,11 +74,6 @@ void Decoder::playAudioFile(std::string path)
 		gst_message_unref(msg);
 	gst_object_unref(bus);
 	gst_element_set_state(pipeline, GST_STATE_NULL);
-	
-	delete pad;
-	delete ghost_pad;
-	delete bus;
-	delete msg;
 }
 
 void Decoder::setVolume(float v)
