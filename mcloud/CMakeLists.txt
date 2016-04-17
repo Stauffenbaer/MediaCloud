@@ -7,7 +7,7 @@ find_package(Boost 1.55.0 REQUIRED COMPONENTS system filesystem thread)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(mcloudSRC MediaCloudSettings.cpp MediaCloudFilesystem.cpp MediaCloudDecoder.cpp MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp MediaCloudDecoder.cpp MediaCloudAudioPlayer.cpp)
+set(mcloudSRC MediaCloudSettings.cpp MediaCloudFilesystem.cpp MediaCloudDecoder.cpp MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp MediaCloudDecoder.cpp MediaCloudAudioPlayer.cpp MediaCloudAudioProvider.cpp)
 set(mcloudboost ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 set(mcloudLIBS ${mcloudboost} ao sqlite3 avutil avcodec avformat ssl crypto)
 

@@ -28,6 +28,8 @@ SOFTWARE.
 #include "MediaCloudDatabase.h"
 #include "MediaCloudSettings.h"
 #include "MediaCloudDecoder.h"
+#include "MediaCloudAudioPlayer.h"
+#include "MediaCloudAudioProvider.h"
 #include "security/MediaCloudLoginProvider.h"
 
 #include <boost/asio.hpp>
@@ -47,14 +49,10 @@ namespace MediaCloud {
 		Settings *settings;
 		Decoder* decoder;
 		LoginProvider *login;
+		AudioProvider *audio;
 		
 	protected:
 		boost::asio::io_service& ios;
-		boost::asio::ssl::stream<boost::asio::ip::tcp::socket> *controlsocket;
-		boost::asio::ssl::stream<boost::asio::ip::tcp::socket> *datasocket;
-		
-		boost::asio::ip::tcp::acceptor *controlacceptor;
-		boost::asio::ip::tcp::acceptor *dataacceptor;
 		
 	private:
 		const unsigned short& controlport = 1712;

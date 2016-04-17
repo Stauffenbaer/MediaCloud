@@ -28,17 +28,18 @@ SOFTWARE.
 
 #include <boost/thread.hpp>
 
+#include "MediaCloudDatabase.h"
 #include "MediaCloudDecoder.h"
 
 namespace MediaCloud {
-
+	
 	class AudioPlayer
 	{
 	public:
-		AudioPlayer();
+		AudioPlayer(Database*);
 		~AudioPlayer();
 		
-		void setMedia(File*);
+		void setMedia(std::string);
 		
 		void play();
 		
@@ -52,11 +53,12 @@ namespace MediaCloud {
 		
 	protected:
 		Decoder *decoder;
+		Database *db;
 		
 	private:
 		struct playerArgs {
 			Decoder *decoder;
-			File *file;
+			std::string file;
 			bool *finished;
 		};
 		playerArgs args;

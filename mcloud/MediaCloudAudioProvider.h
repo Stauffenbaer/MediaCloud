@@ -24,42 +24,64 @@ SOFTWARE.
 
 #pragma once
 
-#include <sstream>
-#include <string>
-#include <sqlite3.h>
-#include <functional>
-#include <array>
 
-#include <boost/random.hpp>
-#include <boost/uuid/sha1.hpp>
+#include <vector>
 
-namespace MediaCloud {	
-	struct ResultRow 
-	{
-		std::vector<std::string> columns;
-	};
-	
-	struct Result
-	{
-		size_t rows = 0;
-		size_t columns = 0;
-		
-		std::vector<ResultRow> data;
-	};
+#include "MediaCloudDatabase.h"
+#include "MediaCloudFilesystem.h"
+#include "MediaCloudAudioPlayer.h"
 
-	class Database
+namespace MediaCloud {
+
+	class Track
 	{
 	public:
-		Database();
-		~Database();
-				
-		Result* query(std::string);
+		Track();
+		~Track();
+		
+		int ID;
+		int file;
+		std::string path;
+		
+		std::string title;
+		std::string artist;
+		std::string album;
+		int tracknr;
+		int duration;
+	};
+	
+	class Playlist
+	{
+	public:
+		Playlist();
+		~Playlist();
+	};
+	
+	class Album
+	{
+	public:
+		Album();
+		~Album();
+		
+		int ID;
+		std::string name;
+		
+		std::vector<Track> tracks;
+	};
+	
+	class AudioProvider
+	{
+	public:
+		AudioProvider(Database*, Filesystem*);
+		~AudioProvider();
+		
+		std::vector<Album> GetAlben();
+		
+		AudioPlayer *player;
 		
 	protected:
-		sqlite3 *db;
-		
-	private:
-		const std::string& filename = "data/mediacloud.db";
+		Database *db;
+		Filesystem *fs;
 	};
 
 }

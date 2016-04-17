@@ -35,9 +35,15 @@ Decoder::Decoder()
 Decoder::~Decoder()
 {
 	gst_object_unref(pipeline);
+	
+	delete pipeline;
+	delete bin;
+	delete equalizer;
+	delete convert;
+	delete sink;
 }
 
-void Decoder::playAudioFile(File* file)
+void Decoder::playAudioFile(std::string path)
 {
 	GstPad *pad, *ghost_pad;
 	GstBus *bus;
@@ -46,7 +52,7 @@ void Decoder::playAudioFile(File* file)
 	gst_init(0, 0);
 	
 	std::stringstream s = std::stringstream();
-	s << "file://" << file->path;
+	s << "file://" << path;
 	g_object_set(G_OBJECT(pipeline), "uri", s.str().c_str(), NULL);
 	
 	equalizer = gst_element_factory_make("equalizer-3bands", "equalizer");
@@ -74,6 +80,11 @@ void Decoder::playAudioFile(File* file)
 		gst_message_unref(msg);
 	gst_object_unref(bus);
 	gst_element_set_state(pipeline, GST_STATE_NULL);
+	
+	delete pad;
+	delete ghost_pad;
+	delete bus;
+	delete msg;
 }
 
 void Decoder::setVolume(float v)

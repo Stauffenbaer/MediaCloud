@@ -44,7 +44,7 @@ namespace MediaCloud {
 		Decoder();
 		~Decoder();
 		
-		void playAudioFile(File*);
+		void playAudioFile(std::string);
 		
 		void setVolume(float);
 		void pauseAudio();

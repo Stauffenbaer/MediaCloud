@@ -35,6 +35,8 @@ Database::Database()
 	this->query("CREATE TABLE IF NOT EXISTS tbl_settings (ID INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value TEXT)");
 	this->query("CREATE TABLE IF NOT EXISTS tbl_music (ID INTEGER PRIMARY KEY AUTOINCREMENT, file INTEGER, title TEXT, artist TEXT, album TEXT, tracknr INT, duration INT)");
 	this->query("CREATE TABLE IF NOT EXISTS tbl_perm (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, level INT(8), name TEXT)");
+	this->query("CREATE TABLE IF NOT EXISTS tbl_playlists (ID INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, user INT(8))");
+	this->query("CREATE TABLE IF NOT EXISTS tbl_playlisttracks (ID INTEGER PRIMARY KEY AUTOINCREMENT, plistid INT(8), plistindex INT(8), trackid INT(8))");
 }
 
 Database::~Database()
@@ -74,45 +76,4 @@ Result* Database::query(std::string query)
 	
 	res->rows = res->data.size();
 	return res;
-}
-
-std::vector<std::string> Database::GetAlben()
-{
-	std::vector<std::string> alben = std::vector<std::string>();
-	Result *res = this->query("SELECT DISTINCT album FROM tbl_music");
-	
-	for(int i = 0;i < res->rows; ++i) {
-		alben.push_back(res->data[i].columns[0]);
-	}
-	
-	return alben;
-}
-
-std::vector<Track> Database::GetTracksFromAlbum(std::string album)
-{
-	std::vector<Track> tracks = std::vector<Track>();
-	
-	std::stringstream query = std::stringstream();
-	query << "SELECT * FROM tbl_music WHERE album='";
-	query << album << "'";
-	Result *res = this->query(query.str());
-	
-	for(int i = 0;i < res->rows; ++i) {
-		Track t = Track();
-		query = std::stringstream();
-		query << "SELECT path FROM tbl_files WHERE ID='";
-		query << res->data[i].columns[1] << "'";
-		Result *res2 = this->query(query.str());
-		t.ID = atoi(res->data[i].columns[0].c_str());
-		t.path = res2->data[0].columns[0];
-		t.title = res->data[i].columns[2];
-		t.artist = res->data[i].columns[3];
-		t.album = res->data[i].columns[4];
-		t.tracknumber = atoi(res->data[i].columns[5].c_str());
-		t.duration = atoi(res->data[i].columns[6].c_str());
-		
-		tracks.push_back(t);
-	}
-	
-	return tracks;
 }

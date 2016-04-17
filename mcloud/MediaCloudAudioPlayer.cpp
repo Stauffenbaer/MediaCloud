@@ -26,8 +26,9 @@ SOFTWARE.
 
 using namespace MediaCloud;
 
-AudioPlayer::AudioPlayer()
+AudioPlayer::AudioPlayer(Database* database)
 {
+	this->db = database;
 	decoder = new Decoder();
 	
 	finished = false;
@@ -47,7 +48,7 @@ bool AudioPlayer::isFinished()
 	return finished;
 }
 
-void AudioPlayer::setMedia(File *file)
+void AudioPlayer::setMedia(std::string file)
 {
 	args.file = file;
 }
