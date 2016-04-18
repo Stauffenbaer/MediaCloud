@@ -86,9 +86,7 @@ void Filesystem::registerFile(std::string path)
 		
 		Result* res = db->query(query.str());
 		if (res != 0) {
-			int fID;
-			std::string sID = res->data[0].columns[0];
-			std::istringstream(sID) >> fID;
+			int fID = atoi(res->data[0].columns[0].c_str());
 			
 			query = std::stringstream();
 			query << "INSERT INTO tbl_music (file, title, artist, album, tracknr, duration) VALUES ('";
@@ -100,6 +98,17 @@ void Filesystem::registerFile(std::string path)
 			query << data->duration << "')";
 			
 			db->query(query.str());
+			query = std::stringstream();
+			
+			query << "SELECT ID FROM tbl_music WHERE file='" << fID << "'";
+			Result *res = db->query(query.str());
+			if (res->rows != 0) {
+				int tID = atoi(res->data[0].columns[0].c_str());
+				
+				query = std::stringstream();
+				query << "INSERT INTO tbl_covers (trackid, cover) VALUES ('" << tID << "', ' ')";
+				db->query(query.str());
+			}
 		}
 	}
 }
@@ -253,4 +262,42 @@ Filesystem::TagData* Filesystem::getMetaData(std::string path)
 	
 	avformat_free_context(container);
 	return data;
+}
+
+std::string Filesystem::getTrackCover(std::string trackpath)
+{
+	std::string basedir = trackpath.substr(0, trackpath.find_last_of("/\\"));
+	
+	std::stringstream query = std::stringstream();
+	query << "SELECT path FROM tbl_files WHERE type='image' AND path LIKE '" << basedir << "%'";
+	
+	Result *res = db->query(query.str());
+	if (res->rows == 0)
+		return "";
+	
+	return res->data[0].columns[0];
+}
+
+void Filesystem::registerCovers()
+{
+	std::stringstream query = std::stringstream();
+	query << "SELECT trackid FROM tbl_covers WHERE cover=' '";
+	
+	Result *res = db->query(query.str());
+	for(int i = 0;i < res->rows; ++i) {
+		ResultRow row = res->data[i];
+		
+		int trackID = atoi(row.columns[0].c_str());
+		query = std::stringstream();
+		query << "SELECT path FROM tbl_files WHERE ID='" << trackID << "'";
+		
+		Result *r = db->query(query.str());
+		query = std::stringstream();
+		query << "UPDATE tbl_covers SET cover='" << getTrackCover(r->data[0].columns[0]) << "' WHERE trackid='" << trackID << "'";
+		db->query(query.str());
+		
+		delete r;
+	}
+	
+	delete res;
 }

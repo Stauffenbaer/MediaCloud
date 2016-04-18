@@ -50,6 +50,12 @@ namespace MediaCloud {
 		std::string type = "";
 	};
 	
+	struct PriorityPair
+	{
+		std::string name = "";
+		int priority = -1;
+	};
+	
 	struct File
 	{
 		int ID;
@@ -69,6 +75,8 @@ namespace MediaCloud {
 		void registerFiles(std::string);
 		void registerDirectory(std::string);
 		
+		void registerCovers();
+		
 		File* getFile(int);
 		std::vector<File*> getFiles();
 		
@@ -79,6 +87,8 @@ namespace MediaCloud {
 		const std::string& extensionPath = "data/extensions.xml";
 		
 		std::string getType(std::string);
+		
+		std::string getTrackCover(std::string);
 		
 		void registerAllExtensions();
 		std::vector<ExtensionPair> extensions;

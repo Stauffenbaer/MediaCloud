@@ -37,6 +37,7 @@ Database::Database()
 	this->query("CREATE TABLE IF NOT EXISTS tbl_perm (ID INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, level INT(8), name TEXT)");
 	this->query("CREATE TABLE IF NOT EXISTS tbl_playlists (ID INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, user INT(8))");
 	this->query("CREATE TABLE IF NOT EXISTS tbl_playlisttracks (ID INTEGER PRIMARY KEY AUTOINCREMENT, plistid INT(8), plistindex INT(8), trackid INT(8))");
+	this->query("CREATE TABLE IF NOT EXISTS tbl_covers (ID INTEGER PRIMARY KEY AUTOINCREMENT, trackid INT(8), cover TEXT)");
 }
 
 Database::~Database()

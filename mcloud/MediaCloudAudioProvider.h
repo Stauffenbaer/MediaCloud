@@ -100,11 +100,11 @@ namespace MediaCloud {
 		void playTrack(Track);
 		bool isPlaying();
 		
-		AudioPlayer *player;
-		
 	protected:
 		Database *db;
 		Filesystem *fs;
+		
+		AudioPlayer *player;
 		
 	private:
 		Track getTrack(int);
