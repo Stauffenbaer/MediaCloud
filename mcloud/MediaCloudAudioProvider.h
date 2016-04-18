@@ -26,6 +26,7 @@ SOFTWARE.
 
 
 #include <vector>
+#include <map>
 
 #include "MediaCloudDatabase.h"
 #include "MediaCloudFilesystem.h"
@@ -55,6 +56,15 @@ namespace MediaCloud {
 	public:
 		Playlist();
 		~Playlist();
+		
+		int ID;
+		std::string name;
+		std::string user;
+		
+		int current;
+		int count;
+		
+		std::map<int, Track> tracks;
 	};
 	
 	class Album
@@ -76,12 +86,30 @@ namespace MediaCloud {
 		~AudioProvider();
 		
 		std::vector<Album> GetAlben();
+		std::vector<Playlist> GetAllPlaylists();
+		std::vector<Playlist> GetUserPlaylists(std::string);
+		
+		Playlist createPlaylist(std::string, int);
+		int getCurrentPlaylistIndex(Playlist);
+		void addTrackToPlaylist(Playlist, Track);
+		
+		Track getCurrentTrack(Playlist);
+		bool nextTrack(Playlist);
+		bool lastTrack(Playlist);
+		
+		void playTrack(Track);
+		bool isPlaying();
 		
 		AudioPlayer *player;
 		
 	protected:
 		Database *db;
 		Filesystem *fs;
+		
+	private:
+		Track getTrack(int);
+		std::string getUsername(int);
+		int getUserID(std::string);
 	};
 
 }
