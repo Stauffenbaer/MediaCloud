@@ -11,7 +11,7 @@ It allows to managing media of the server's filesystem. The client can choose be
 For security-reasons MediaCloud is providing a login-system, so nobody can access media without permission of the administrator.
 <br />
 <br />
-** Current dependencies **
+**Current dependencies** <br />
 libgstreamer1.0-dev <br />
 libboost-dev <br />
 libboost-filesystem-dev <br />
