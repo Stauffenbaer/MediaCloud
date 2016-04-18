@@ -3,13 +3,13 @@ project(mediacloud)
 
 
 # Set CMAKE_C_FLAGS variable with info from pkg-util
-execute_process(COMMAND pkg-config --cflags gstreamer-0.10
+execute_process(COMMAND pkg-config --cflags gstreamer-1.0
                 OUTPUT_VARIABLE CMAKE_C_FLAGS)
 string(REPLACE "\n" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
 message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 
 # Set CMAKE_LINKER_FLAGS variable with info from pkg-util
-execute_process(COMMAND pkg-config --libs gstreamer-0.10
+execute_process(COMMAND pkg-config --libs gstreamer-1.0
                 OUTPUT_VARIABLE CMAKE_LINKER_FLAGS)
 string(REPLACE "\n" "" CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
 message("CMAKE_LINKER_FLAGS: ${CMAKE_LINKER_FLAGS}")
