@@ -100,21 +100,10 @@ std::vector<Album> AudioProvider::GetAlben()
 		
 		for(int i = 0;i < trackRes->rows; ++i) {
 			ResultRow trackRow = trackRes->data[i];
+			
 			Track t = Track();
-			t.ID = atoi(trackRow.columns[0].c_str());
-			t.file = atoi(trackRow.columns[1].c_str());
-			t.title = trackRow.columns[2];
-			t.artist = trackRow.columns[3];
-			t.album = trackRow.columns[4];
-			t.tracknr = atoi(trackRow.columns[5].c_str());
-			t.duration = atoi(trackRow.columns[6].c_str());
+			t = getTrack(atoi(trackRow.columns[0].c_str()));
 			
-			query = std::stringstream();
-			query << "SELECT path FROM tbl_files WHERE ID='" << t.file << "'";
-			Result *pathRes = db->query(query.str());
-			t.path = pathRes->data[0].columns[0];
-			
-			delete pathRes;
 			album.tracks.push_back(t);
 		}
 		
@@ -195,6 +184,10 @@ Track AudioProvider::getTrack(int ID)
 	query = std::stringstream();
 	query << "SELECT path FROM tbl_files WHERE ID='" << t.file << "'";
 	t.path = db->query(query.str())->data[0].columns[0];
+	
+	query = std::stringstream();
+	query << "SELECT cover FROM tbl_covers WHERE trackid='" << t.ID << "'";
+	t.cover = db->query(query.str())->data[0].columns[0];
 	
 	return t;
 }
@@ -308,6 +301,25 @@ bool AudioProvider::lastTrack(Playlist plist)
 		return false;
 	
 	return true;
+}
+
+std::string AudioProvider::getTrackCover(Track track)
+{
+	return track.cover;
+}
+
+std::string AudioProvider::getAlbumCover(Album album)
+{
+	Track track = album.tracks[0];
+	
+	return this->getTrackCover(track);
+}
+
+std::string AudioProvider::getPlaylistCover(Playlist plist)
+{
+	Track track = plist.tracks[0];
+	
+	return this->getTrackCover(track);
 }
 
 void AudioProvider::playTrack(Track t)

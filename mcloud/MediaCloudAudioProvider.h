@@ -43,6 +43,7 @@ namespace MediaCloud {
 		int ID;
 		int file;
 		std::string path;
+		std::string cover;
 		
 		std::string title;
 		std::string artist;
@@ -96,6 +97,10 @@ namespace MediaCloud {
 		Track getCurrentTrack(Playlist);
 		bool nextTrack(Playlist);
 		bool lastTrack(Playlist);
+		
+		std::string getTrackCover(Track);
+		std::string getAlbumCover(Album);
+		std::string getPlaylistCover(Playlist);
 		
 		void playTrack(Track);
 		bool isPlaying();
