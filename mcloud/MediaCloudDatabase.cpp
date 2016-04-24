@@ -78,3 +78,40 @@ Result* Database::query(std::string query)
 	res->rows = res->data.size();
 	return res;
 }
+
+Result* Database::query(std::stringstream* query)
+{
+	return this->query(query->str());
+}
+
+ResultRow Result::getRow(int n)
+{
+	ResultRow r = this->data[n];
+	
+	return r;
+}
+
+std::string Result::getData(int n, int k)
+{
+	std::string s = this->data[n].columns[k];
+	
+	return s;
+}
+
+std::string ResultRow::getColumn(int k)
+{
+	std::string s = this->columns[k];
+	
+	return s;
+}
+
+void Result::dump()
+{
+	for (int i = 0;i < rows; ++i) {
+		std::cout << "[r: " << i << "]" << std::endl;
+		for(int j = 0;j < columns; ++j) {
+			std::cout << "    {c: " << j << "}" << data[i].columns[j] << std::endl;
+		}
+		std::cout << "[/r]" << std::endl;
+	}
+}

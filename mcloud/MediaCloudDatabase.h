@@ -33,10 +33,13 @@ SOFTWARE.
 #include <boost/random.hpp>
 #include <boost/uuid/sha1.hpp>
 
-namespace MediaCloud {	
+namespace MediaCloud {
+	
 	struct ResultRow 
 	{
 		std::vector<std::string> columns;
+		
+		std::string getColumn(int);
 	};
 	
 	struct Result
@@ -45,6 +48,12 @@ namespace MediaCloud {
 		size_t columns = 0;
 		
 		std::vector<ResultRow> data;
+		
+		ResultRow getRow(int);
+		
+		std::string getData(int, int);
+		
+		void dump();
 	};
 
 	class Database
@@ -54,6 +63,7 @@ namespace MediaCloud {
 		~Database();
 				
 		Result* query(std::string);
+		Result* query(std::stringstream*);
 		
 	protected:
 		sqlite3 *db;
