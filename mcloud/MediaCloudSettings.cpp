@@ -51,9 +51,18 @@ std::string* Settings::GetValue(std::string key)
 void Settings::SetValue(std::string key, std::string value)
 {
 	std::stringstream query = std::stringstream();
-	query << "INSERT INTO tbl_settings (key, value) VALUES ('";
-	query << key << "', '";
-	query << value << "')";
-	
-	db->query(query.str());
+	query << "SELECT * FROM tbl_settings WHERE key='" << key << "'";
+	Result *res = db->query(query.str());
+	if (res->rows == 0) {
+		query = std::stringstream();
+		query << "INSERT INTO tbl_settings (key, value) VALUES ('";
+		query << key << "', '";
+		query << value << "')";
+		db->query(query.str());
+	}
+	else {
+		query = std::stringstream();
+		query << "UPDATE tbl_settings SET value='" << value << "' WHERE key='" << key << "'";
+		db->query(query.str());
+	}
 }
