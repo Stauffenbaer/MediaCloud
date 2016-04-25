@@ -29,7 +29,11 @@ using namespace MediaCloud;
 Decoder::Decoder()
 {
 	gst_init(0, 0);
+	
  	pipeline = gst_parse_launch("playbin", NULL);
+	equalizer = gst_element_factory_make("equalizer-3bands", "equalizer");
+	convert = gst_element_factory_make("audioconvert", "convert");
+	sink = gst_element_factory_make("autoaudiosink", "audio_sink");
 }
 
 Decoder::~Decoder()
@@ -48,10 +52,6 @@ void Decoder::playAudioFile(std::string path)
 	std::stringstream s = std::stringstream();
 	s << "file://" << path;
 	g_object_set(G_OBJECT(pipeline), "uri", s.str().c_str(), NULL);
-	
-	equalizer = gst_element_factory_make("equalizer-3bands", "equalizer");
-	convert = gst_element_factory_make("audioconvert", "convert");
-	sink = gst_element_factory_make("autoaudiosink", "audio_sink");
 	
 	bin = gst_bin_new("audio_sink_bin");
 	gst_bin_add_many(GST_BIN (bin), equalizer, convert, sink, NULL);
@@ -79,6 +79,21 @@ void Decoder::playAudioFile(std::string path)
 void Decoder::setVolume(float v)
 {
 	g_object_set(G_OBJECT(pipeline), "volume", v, NULL);
+}
+
+void Decoder::setLowGain(float g)
+{
+	g_object_set(G_OBJECT(equalizer), "band0", g, NULL);
+}
+
+void Decoder::setMiddleGain(float g)
+{
+	g_object_set(G_OBJECT(equalizer), "band1", g, NULL);
+}
+
+void Decoder::setHighGain(float g)
+{
+	g_object_set(G_OBJECT(equalizer), "band2", g, NULL);
 }
 
 void Decoder::pauseAudio()

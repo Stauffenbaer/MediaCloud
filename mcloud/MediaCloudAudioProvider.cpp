@@ -310,16 +310,12 @@ std::string AudioProvider::getTrackCover(Track track)
 
 std::string AudioProvider::getAlbumCover(Album album)
 {
-	Track track = album.tracks[0];
-	
-	return this->getTrackCover(track);
+	return album.tracks[0].cover;
 }
 
 std::string AudioProvider::getPlaylistCover(Playlist plist)
 {
-	Track track = plist.tracks[0];
-	
-	return this->getTrackCover(track);
+	return plist.tracks[0].cover;
 }
 
 void AudioProvider::playTrack(Track t)
@@ -331,4 +327,30 @@ void AudioProvider::playTrack(Track t)
 bool AudioProvider::isPlaying()
 {
 	return !this->player->isFinished();
+}
+
+void AudioProvider::playSynchronousTrack(Track track)
+{
+	this->playTrack(track);
+	while(this->isPlaying()) ;
+}
+
+void AudioProvider::setVolume(float v)
+{
+	this->player->setVolume(v);
+}
+
+void AudioProvider::setLow(float g)
+{
+	player->setLow(g);
+}
+
+void AudioProvider::setMiddle(float g)
+{
+	player->setMiddle(g);
+}
+
+void AudioProvider::setHigh(float g)
+{
+	player->setHigh(g);
 }

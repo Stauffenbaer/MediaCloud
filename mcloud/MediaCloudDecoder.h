@@ -47,6 +47,10 @@ namespace MediaCloud {
 		void playAudioFile(std::string);
 		
 		void setVolume(float);
+		void setLowGain(float);
+		void setMiddleGain(float);
+		void setHighGain(float);
+		
 		void pauseAudio();
 		void continueAudio();
 		void stopAudio();

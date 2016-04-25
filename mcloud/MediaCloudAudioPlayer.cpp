@@ -81,6 +81,21 @@ void AudioPlayer::setVolume(float v)
 	decoder->setVolume(v);
 }
 
+void AudioPlayer::setLow(float g)
+{
+	decoder->setLowGain(g);
+}
+
+void AudioPlayer::setMiddle(float g)
+{
+	decoder->setMiddleGain(g);
+}
+
+void AudioPlayer::setHigh(float g)
+{
+	decoder->setHighGain(g);
+}
+
 void AudioPlayer::audio_func(playerArgs *args)
 {
 	args->decoder->playAudioFile(args->file);

@@ -20,7 +20,7 @@ Path=gcc
 Type=GCC
 
 [Filters]
-size=26
+size=30
 
 [Filters][0]
 inclusive=0
@@ -115,6 +115,26 @@ targets=1
 [Filters][25]
 inclusive=0
 pattern=/data/mediacloud.db
+targets=1
+
+[Filters][26]
+inclusive=0
+pattern=/mcloud/Boost::boost
+targets=1
+
+[Filters][27]
+inclusive=0
+pattern=/mcloud/Boost::diagnostic_definitions
+targets=1
+
+[Filters][28]
+inclusive=0
+pattern=/mcloud/Boost::dynamic_linking
+targets=1
+
+[Filters][29]
+inclusive=0
+pattern=/mcloud/Boost::disable_autolinking
 targets=1
 
 [Filters][3]

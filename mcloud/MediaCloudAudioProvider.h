@@ -105,6 +105,14 @@ namespace MediaCloud {
 		void playTrack(Track);
 		bool isPlaying();
 		
+		void setVolume(float);
+		
+		void setLow(float);
+		void setMiddle(float);
+		void setHigh(float);
+		
+		void playSynchronousTrack(Track);
+		
 	protected:
 		Database *db;
 		Filesystem *fs;
