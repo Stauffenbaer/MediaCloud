@@ -98,6 +98,8 @@ namespace MediaCloud {
 		private:
 			boost::asio::ip::tcp::socket sock;
 			boost::asio::io_service& service;
+			
+			bool active = true;
 		};
 		
 		void startAccept();

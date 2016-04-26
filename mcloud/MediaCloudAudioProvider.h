@@ -106,6 +106,7 @@ namespace MediaCloud {
 		
 		void pauseState();
 		void playState();
+		void stopState();
 		
 		void playTrack(Track);
 		bool isPlaying();

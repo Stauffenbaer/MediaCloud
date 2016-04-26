@@ -58,6 +58,7 @@ Server::~Server()
 void Server::startNetworking()
 {
 	networkThread = boost::thread(boost::bind(&Server::run_networkThread, this));
+	networkThread.join();
 }
 
 void Server::run_networkThread()
@@ -107,6 +108,10 @@ void Server::session::start()
 		msg.erase(std::remove(msg.begin(), msg.end(), '\n'), msg.end());
 		
 		std::vector<std::string> arr = Utils::explode(msg, ' ');
+		
+		if (arr.size() <= 0)
+			continue;
+		
 		std::vector<std::string> args = std::vector<std::string>();
 		
 		for(size_t i = 1; i < arr.size(); ++i)
@@ -119,7 +124,7 @@ void Server::session::start()
 		
 		parent->handleCommand(command, args);
 		
-	} while(1);
+	} while(active);
 	writeString(std::string("Closed connection\n"));
 }
 
@@ -138,6 +143,9 @@ void Server::handleCommand(std::string command, std::vector<std::string> args)
 	if (boost::iequals(command, "PLAY"))
 		audio->playState();
 	
+	if (boost::iequals(command, "STOP"))
+		audio->stopState();
+	
 	if (boost::iequals(command, "SET_VOLUME")){
 		float v = std::stof(args[0].c_str());
 		std::cout << "Setting volume to " << v << std::endl;
@@ -147,30 +155,57 @@ void Server::handleCommand(std::string command, std::vector<std::string> args)
 
 void Server::session::disconnect()
 {
-	sock.shutdown(boost::asio::socket_base::shutdown_both);
-	sock.close();
+	try {
+		sock.shutdown(boost::asio::socket_base::shutdown_both);
+		sock.close();
+	}
+	catch(boost::exception& ex) {	}
+	
+	active = false;
 }
 
 void Server::session::write(char* buffer, size_t length)
 {
-	boost::asio::write(sock, boost::asio::buffer(buffer, length));
+	try {
+		boost::asio::write(sock, boost::asio::buffer(buffer, length));
+	}
+	catch(boost::exception& ex) {
+		disconnect();
+	}
 }
 
 void Server::session::writeString(std::string string)
 {
-	boost::asio::write(sock, boost::asio::buffer(string.data(), string.size()));
+	try {
+		boost::asio::write(sock, boost::asio::buffer(string.data(), string.size()));
+	}
+	catch(boost::exception& ex) {
+		disconnect();
+	}
 }
 
 void Server::session::writeBuffer(Server::byte_buffer buffer)
 {
-	boost::asio::write(sock, boost::asio::buffer(buffer.buffer, buffer.length));
+	try {
+		boost::asio::write(sock, boost::asio::buffer(buffer.buffer, buffer.length));
+	}
+	catch(boost::exception& ex) {
+		disconnect();
+	}
 }
 
 Server::byte_buffer Server::session::read()
 {
-	boost::asio::streambuf *buffer = new boost::asio::streambuf();
-	size_t n = boost::asio::read(sock, *buffer, boost::asio::transfer_at_least(1));
 	Server::byte_buffer buf;
+	boost::asio::streambuf *buffer = new boost::asio::streambuf();
+	size_t n = 0;
+	try {
+		n = boost::asio::read(sock, *buffer, boost::asio::transfer_at_least(1));
+	}
+	catch(boost::exception& ex) {
+		disconnect();
+		return buf;
+	}
 	char *bufferaddr = (char *) boost::asio::buffer_cast<const char *>(buffer->data());
 	buf.length = n;
 	

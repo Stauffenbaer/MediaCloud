@@ -35,14 +35,10 @@ int main(int argc, char **argv)
 	boost::asio::io_service serv;
 	MediaCloud::Server *server = new MediaCloud::Server(serv);
 	
-	server->startNetworking();
-	
 	server->filesystem->registerDirectory("/home/julian/Musik/");
 	server->filesystem->registerCovers();
 	
-	while(1) {
-		
-	}
+	server->startNetworking();
 	
 	delete server;
 	return 0;

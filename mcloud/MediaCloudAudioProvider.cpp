@@ -369,3 +369,8 @@ void AudioProvider::playState()
 {
 	player->setPlaying();
 }
+
+void AudioProvider::stopState()
+{
+	player->setStopped();
+}
