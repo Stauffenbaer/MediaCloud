@@ -64,8 +64,8 @@ Result* Database::query(std::string query)
 			ResultRow row = ResultRow();
 			for(int i = 0;i < res->columns; ++i) {
 				const unsigned char* text = sqlite3_column_text (statement, i);
-				
-				row.columns.push_back(std::string((char*) text));
+				if (text != 0)
+					row.columns.push_back(std::string((char*) text));
 			}
 			res->data.push_back(row);
         }

@@ -55,6 +55,12 @@ void AudioPlayer::setMedia(std::string file)
 
 void AudioPlayer::play()
 {
+	if (!finished) {
+		setStopped();
+		delete decoder;
+		decoder = new Decoder();
+		args.decoder = decoder;
+	}
 	finished = false;
 	audioThread = boost::thread(audio_func, &args);
 }

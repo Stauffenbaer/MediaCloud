@@ -42,11 +42,7 @@ Decoder::~Decoder()
 }
 
 void Decoder::playAudioFile(std::string path)
-{
-	GstPad *pad, *ghost_pad;
-	GstBus *bus;
-	GstMessage *msg;
-	
+{	
 	gst_init(0, 0);
 	
 	std::stringstream s = std::stringstream();

@@ -57,6 +57,9 @@ namespace MediaCloud {
 		
 	private:
 		GstElement *pipeline, *bin, *equalizer, *convert, *sink;
+		GstPad *pad, *ghost_pad;
+		GstBus *bus;
+		GstMessage *msg;
 	};
 
 }

@@ -90,6 +90,8 @@ namespace MediaCloud {
 		std::vector<Playlist> GetAllPlaylists();
 		std::vector<Playlist> GetUserPlaylists(std::string);
 		
+		Track getTrackByID(int);
+		
 		Playlist createPlaylist(std::string, int);
 		int getCurrentPlaylistIndex(Playlist);
 		void addTrackToPlaylist(Playlist, Track);
@@ -101,6 +103,9 @@ namespace MediaCloud {
 		std::string getTrackCover(Track);
 		std::string getAlbumCover(Album);
 		std::string getPlaylistCover(Playlist);
+		
+		void pauseState();
+		void playState();
 		
 		void playTrack(Track);
 		bool isPlaying();

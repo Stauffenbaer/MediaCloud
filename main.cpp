@@ -35,16 +35,14 @@ int main(int argc, char **argv)
 	boost::asio::io_service serv;
 	MediaCloud::Server *server = new MediaCloud::Server(serv);
 	
-	serv.run();
+	server->startNetworking();
 	
 	server->filesystem->registerDirectory("/home/julian/Musik/");
 	server->filesystem->registerCovers();
 	
-	Track t = server->audio->GetAlben()[0].tracks[0];
-	
-	server->audio->setLow(+12.0f);
-	server->audio->setVolume(1.0f);
-	server->audio->playSynchronousTrack(t);
+	while(1) {
+		
+	}
 	
 	delete server;
 	return 0;

@@ -24,6 +24,8 @@ SOFTWARE.
 
 #pragma once
 
+#include "MediaCloudUtils.h"
+
 #include "MediaCloudFilesystem.h"
 #include "MediaCloudDatabase.h"
 #include "MediaCloudSettings.h"
@@ -34,29 +36,71 @@ SOFTWARE.
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
-#include <boost/asio/ssl.hpp>
+#include <boost/thread.hpp>
 
 namespace MediaCloud {
 
+	#define MCS_PORT 1712
+	
 	class Server
 	{
 	public:
 		Server(boost::asio::io_service&);
 		~Server();
 		
-		Database* database;
+		Database *database;
 		Filesystem *filesystem;
 		Settings *settings;
-		Decoder* decoder;
+		Decoder *decoder;
 		LoginProvider *login;
 		AudioProvider *audio;
 		
+		void startNetworking();
+		
 	protected:
 		boost::asio::io_service& ios;
+		boost::asio::ip::tcp::acceptor acceptor;
+		
+		boost::thread networkThread;
 		
 	private:
-		const unsigned short& controlport = 1712;
-		const unsigned short& dataport = 1713;
+		std::string server_version = "1.0.0-a";
+		void run_networkThread();
+		
+		void handleCommand(std::string, std::vector<std::string>);
+		
+		void InitializeSocket();
+		
+		struct byte_buffer {
+			char *buffer;
+			uint64_t length;
+			
+			std::string getString();
+		};
+		
+		class session {
+		public:
+			session(Server*, boost::asio::io_service&);
+			
+			void start();
+			void disconnect();
+			
+			boost::asio::ip::tcp::socket& socket();
+			
+		protected:			
+			void write(char*, size_t);
+			void writeString(std::string);
+			void writeBuffer(byte_buffer);
+			byte_buffer read();
+			
+			Server *parent;
+			
+		private:
+			boost::asio::ip::tcp::socket sock;
+			boost::asio::io_service& service;
+		};
+		
+		void startAccept();
 	};
 
 }

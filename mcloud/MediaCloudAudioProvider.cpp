@@ -167,6 +167,11 @@ std::vector<Playlist> AudioProvider::GetUserPlaylists(std::string user)
 	return plists;
 }
 
+Track AudioProvider::getTrackByID(int id)
+{
+	return getTrack(id);
+}
+
 Track AudioProvider::getTrack(int ID)
 {
 	std::stringstream query = std::stringstream();
@@ -353,4 +358,14 @@ void AudioProvider::setMiddle(float g)
 void AudioProvider::setHigh(float g)
 {
 	player->setHigh(g);
+}
+
+void AudioProvider::pauseState()
+{
+	player->setPaused();
+}
+
+void AudioProvider::playState()
+{
+	player->setPlaying();
 }
