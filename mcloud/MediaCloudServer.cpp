@@ -140,10 +140,6 @@ void Server::session::start()
 
 void Server::handleCommand(std::string command, std::vector<std::string> args)
 {	
-	for(auto it = command.begin(); it != command.end(); ++it)
-		std::cout << *it << " (" << +*it << ") ";
-	std::cout << std::endl;
-	
 	if (boost::iequals(command, "REQUEST_TRACK")) {
 		int ID = atoi(args[0].c_str());
 		Track t = audio->getTrackByID(ID);
