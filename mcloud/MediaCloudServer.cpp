@@ -119,8 +119,18 @@ void Server::session::start()
 		
 		std::string command = arr[0];
 		
-		if (boost::iequals(command, "QUIT"))
+		if (command.size() == 0)
+			continue;
+		
+		for(size_t i = 0;i < command.size(); ++i) {
+			if (command[i] == 127)
+				command = command.substr(0, command.size() - 1);
+		}
+		
+		if (boost::iequals(command, "QUIT")) {
+			active = false;
 			break;
+		}
 		
 		parent->handleCommand(command, args);
 		
@@ -129,7 +139,11 @@ void Server::session::start()
 }
 
 void Server::handleCommand(std::string command, std::vector<std::string> args)
-{
+{	
+	for(auto it = command.begin(); it != command.end(); ++it)
+		std::cout << *it << " (" << +*it << ") ";
+	std::cout << std::endl;
+	
 	if (boost::iequals(command, "REQUEST_TRACK")) {
 		int ID = atoi(args[0].c_str());
 		Track t = audio->getTrackByID(ID);
