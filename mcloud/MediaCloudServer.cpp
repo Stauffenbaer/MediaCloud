@@ -63,7 +63,7 @@ void Server::startNetworking()
 
 void Server::run_networkThread()
 {
-	while(1) {
+	while(server_active) {
 		startAccept();
 		ios.run();
 	}
@@ -132,6 +132,12 @@ void Server::session::start()
 			break;
 		}
 		
+		if (boost::iequals(command, "SHUTDOWN")) {
+			active = false;
+			parent->server_active = false;
+			break;
+		}
+		
 		parent->handleCommand(command, args);
 		
 	} while(active);
@@ -158,6 +164,7 @@ void Server::handleCommand(std::string command, std::vector<std::string> args)
 	
 	if (boost::iequals(command, "SET_VOLUME")){
 		float v = std::stof(args[0].c_str());
+		v = Utils::clamp<float>(0.0f, 2.0f, v);
 		std::cout << "Setting volume to " << v << std::endl;
 		audio->setVolume(v);
 	}

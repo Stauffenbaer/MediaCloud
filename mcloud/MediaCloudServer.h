@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "MediaCloudUtils.h"
+#include "MediaCloudUtils.hpp"
 
 #include "MediaCloudFilesystem.h"
 #include "MediaCloudDatabase.h"
@@ -66,6 +66,7 @@ namespace MediaCloud {
 	private:
 		std::string server_version = "1.0.0-a";
 		void run_networkThread();
+		bool server_active = true;
 		
 		void handleCommand(std::string, std::vector<std::string>);
 		

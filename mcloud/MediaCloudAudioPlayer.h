@@ -68,6 +68,7 @@ namespace MediaCloud {
 		playerArgs args;
 		
 		bool finished;
+		float volume = 1.0f;
 		boost::thread audioThread;
 		
 		static void audio_func(playerArgs*);

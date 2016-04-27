@@ -55,6 +55,7 @@ void AudioPlayer::setMedia(std::string file)
 
 void AudioPlayer::play()
 {
+	decoder->setVolume(volume);
 	if (!finished) {
 		setStopped();
 		delete decoder;
@@ -84,6 +85,7 @@ void AudioPlayer::setStopped()
 
 void AudioPlayer::setVolume(float v)
 {
+	volume = v;
 	decoder->setVolume(v);
 }
 
