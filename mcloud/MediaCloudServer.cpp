@@ -75,6 +75,7 @@ void Server::InitializeSocket()
 	controlHandlers = std::vector<commandHandler>();
 	
 	controlHandlers.push_back(&Server::commandHandlerRequestTrack);
+	controlHandlers.push_back(&Server::commandHandlerRequestMeta);
 	controlHandlers.push_back(&Server::commandHandlerPause);
 	controlHandlers.push_back(&Server::commandHandlerPlay);
 	controlHandlers.push_back(&Server::commandHandlerStop);
@@ -216,10 +217,11 @@ Server::byte_buffer Server::session::read()
 		return buf;
 	}
 	char *bufferaddr = (char *) boost::asio::buffer_cast<const char *>(buffer->data());
-	buf.length = n;
+	buf.length = n + 1;
 	
-	buf.buffer = new char[n];
+	buf.buffer = new char[n + 1];
 	std::copy(bufferaddr, bufferaddr + n, buf.buffer);
+	buf.buffer[n] = 0;
 	
 	delete buffer;
 	
@@ -246,6 +248,21 @@ bool Server::commandHandlerRequestTrack(std::string cmd, std::vector< std::strin
 		sessionptr->writeString(std::string("Track-ID not found!\n"));
 	
 	return true;
+}
+
+bool Server::commandHandlerRequestMeta(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "REQUEST_META"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	Track track;
+	audio->getTrackByID(audio->currentTrack, &track);
+	
+	sessionptr->writeString(std::string("TITLE:") + track.title + std::string("\n"));
+	sessionptr->writeString(std::string("ARTIST:") + track.artist + std::string("\n"));
+	sessionptr->writeString(std::string("ALBUM:") + track.album + std::string("\n"));
 }
 
 bool Server::commandHandlerPause(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)

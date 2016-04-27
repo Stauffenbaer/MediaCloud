@@ -119,6 +119,8 @@ namespace MediaCloud {
 		
 		void playSynchronousTrack(Track);
 		
+		int currentTrack;
+		
 	protected:
 		Database *db;
 		Filesystem *fs;

@@ -110,6 +110,7 @@ namespace MediaCloud {
 		void startAccept();
 		
 		static bool commandHandlerRequestTrack(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerRequestMeta(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerPause(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerPlay(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerStop(std::string, std::vector<std::string>*, Server::session*);

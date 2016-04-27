@@ -72,6 +72,8 @@ AudioProvider::AudioProvider(Database *database, Filesystem *filesystem)
 	db = database;
 	fs = filesystem;
 	player = new AudioPlayer(database);
+	
+	currentTrack = 0;
 }
 
 AudioProvider::~AudioProvider()
@@ -334,6 +336,7 @@ std::string AudioProvider::getPlaylistCover(Playlist plist)
 
 void AudioProvider::playTrack(Track t)
 {
+	this->currentTrack = t.ID;
 	this->player->setMedia(t.path);
 	this->player->play();
 }

@@ -30,6 +30,8 @@ AudioPlayer::AudioPlayer(Database* database)
 {
 	this->db = database;
 	
+	decoder = new Decoder();
+	
 	finished = false;
 	
 	args = playerArgs();
