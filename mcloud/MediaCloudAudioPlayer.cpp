@@ -29,12 +29,10 @@ using namespace MediaCloud;
 AudioPlayer::AudioPlayer(Database* database)
 {
 	this->db = database;
-	decoder = new Decoder();
 	
 	finished = false;
 	
 	args = playerArgs();
-	args.decoder = decoder;
 	args.finished = &finished;
 }
 
@@ -55,13 +53,14 @@ void AudioPlayer::setMedia(std::string file)
 
 void AudioPlayer::play()
 {
-	decoder->setVolume(volume);
-	if (!finished) {
-		setStopped();
+	if (decoder != 0) {
+		decoder->stopAudio();
 		delete decoder;
-		decoder = new Decoder();
-		args.decoder = decoder;
 	}
+	decoder = new Decoder();
+	args.decoder = decoder;
+	decoder->setVolume(volume);
+	
 	finished = false;
 	audioThread = boost::thread(audio_func, &args);
 }

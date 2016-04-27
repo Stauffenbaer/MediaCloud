@@ -63,6 +63,7 @@ void Server::startNetworking()
 
 void Server::run_networkThread()
 {
+	InitializeSocket();
 	while(server_active) {
 		startAccept();
 		ios.run();
@@ -71,7 +72,13 @@ void Server::run_networkThread()
 
 void Server::InitializeSocket()
 {
+	controlHandlers = std::vector<commandHandler>();
 	
+	controlHandlers.push_back(&Server::commandHandlerRequestTrack);
+	controlHandlers.push_back(&Server::commandHandlerPause);
+	controlHandlers.push_back(&Server::commandHandlerPlay);
+	controlHandlers.push_back(&Server::commandHandlerStop);
+	controlHandlers.push_back(&Server::commandHandlerSetVolume);
 }
 
 void Server::startAccept()
@@ -138,36 +145,21 @@ void Server::session::start()
 			break;
 		}
 		
-		parent->handleCommand(command, args);
+		parent->handleCommand(this, command, args);
 		
 	} while(active);
 	writeString(std::string("Closed connection\n"));
 }
 
-void Server::handleCommand(std::string command, std::vector<std::string> args)
+void Server::handleCommand(Server::session* sessptr, std::string command, std::vector<std::string> args)
 {	
-	if (boost::iequals(command, "REQUEST_TRACK")) {
-		int ID = atoi(args[0].c_str());
-		Track t = audio->getTrackByID(ID);
-		
-		audio->playTrack(t);
+	for(auto it = controlHandlers.begin(); it != controlHandlers.end(); ++it) {
+		commandHandler handler = *it;
+		if (handler(command, &args, sessptr))
+			return;
 	}
 	
-	if (boost::iequals(command, "PAUSE"))
-		audio->pauseState();
-	
-	if (boost::iequals(command, "PLAY"))
-		audio->playState();
-	
-	if (boost::iequals(command, "STOP"))
-		audio->stopState();
-	
-	if (boost::iequals(command, "SET_VOLUME")){
-		float v = std::stof(args[0].c_str());
-		v = Utils::clamp<float>(0.0f, 2.0f, v);
-		std::cout << "Setting volume to " << v << std::endl;
-		audio->setVolume(v);
-	}
+	std::cout << "No command handler found for [" << command << "]" << std::endl;
 }
 
 void Server::session::disconnect()
@@ -237,4 +229,65 @@ Server::byte_buffer Server::session::read()
 boost::asio::ip::tcp::socket& Server::session::socket()
 {
 	return sock;
+}
+
+bool Server::commandHandlerRequestTrack(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+ 	if (!boost::iequals(cmd, "REQUEST_TRACK"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	int ID = atoi((*args)[0].c_str());
+	Track t;
+	if (audio->getTrackByID(ID, &t) != -1)
+		audio->playTrack(t);
+	else
+		sessionptr->writeString(std::string("Track-ID not found!\n"));
+	
+	return true;
+}
+
+bool Server::commandHandlerPause(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "PAUSE"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	audio->pauseState();
+}
+
+bool Server::commandHandlerPlay(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "PLAY"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	audio->playState();
+}
+
+bool Server::commandHandlerStop(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "STOP"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	audio->stopState();
+}
+
+bool Server::commandHandlerSetVolume(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "SET_VOLUME"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	float v = std::stof((*args)[0].c_str());
+	v = Utils::clamp<float>(0.0f, 2.0f, v);
+	audio->setVolume(v);
+	
+	return true;
 }

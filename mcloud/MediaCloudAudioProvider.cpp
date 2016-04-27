@@ -167,18 +167,27 @@ std::vector<Playlist> AudioProvider::GetUserPlaylists(std::string user)
 	return plists;
 }
 
-Track AudioProvider::getTrackByID(int id)
+int AudioProvider::getTrackByID(int id, Track* track)
 {
-	return getTrack(id);
+	Track t = getTrack(id);
+	if (t.ID == -1)
+		return -1;
+	
+	*track = getTrack(id);
+	return 0;
 }
 
 Track AudioProvider::getTrack(int ID)
 {
+	Track t = Track();
 	std::stringstream query = std::stringstream();
 	query << "SELECT * FROM tbl_music WHERE ID='" << ID << "' LIMIT 1";
 	Result *trackRes = db->query(query.str());
+	if (trackRes->rows == 0) {
+		t.ID = -1;
+		return t;
+	}
 	ResultRow trackRow = trackRes->data[0];
-	Track t = Track();
 	t.ID = ID;
 	t.file = atoi(trackRow.columns[1].c_str());
 	t.title = trackRow.columns[2];

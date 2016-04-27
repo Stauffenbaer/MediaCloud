@@ -65,12 +65,6 @@ namespace MediaCloud {
 		
 	private:
 		std::string server_version = "1.0.0-a";
-		void run_networkThread();
-		bool server_active = true;
-		
-		void handleCommand(std::string, std::vector<std::string>);
-		
-		void InitializeSocket();
 		
 		struct byte_buffer {
 			char *buffer;
@@ -86,13 +80,12 @@ namespace MediaCloud {
 			void start();
 			void disconnect();
 			
-			boost::asio::ip::tcp::socket& socket();
-			
-		protected:			
 			void write(char*, size_t);
 			void writeString(std::string);
 			void writeBuffer(byte_buffer);
 			byte_buffer read();
+			
+			boost::asio::ip::tcp::socket& socket();
 			
 			Server *parent;
 			
@@ -103,7 +96,24 @@ namespace MediaCloud {
 			bool active = true;
 		};
 		
+		typedef bool (*commandHandler)(std::string, std::vector<std::string>*, Server::session*);
+		
+		std::vector<commandHandler> controlHandlers;
+		
+		void run_networkThread();
+		bool server_active = true;
+		
+		void handleCommand(Server::session*, std::string, std::vector<std::string>);
+		
+		void InitializeSocket();
+		
 		void startAccept();
+		
+		static bool commandHandlerRequestTrack(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerPause(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerPlay(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerStop(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerSetVolume(std::string, std::vector<std::string>*, Server::session*);
 	};
 
 }
