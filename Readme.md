@@ -20,5 +20,3 @@ libboost-thread-dev <br />
 libsqlite3-dev <br />
 libavutil-dev <br />
 libavformat-dev <br />
-libssl-dev <br />
-libao-dev <br />
