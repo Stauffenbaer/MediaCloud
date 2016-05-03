@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include <iostream>
 
-#include "mcloud/MediaCloudServer.h"
+#include "mcloud/MediaCloudClient.h"
 
 #include <boost/asio.hpp>
 
@@ -32,14 +32,5 @@ using namespace MediaCloud;
 
 int main(int argc, char **argv) 
 {
-	boost::asio::io_service serv;
-	MediaCloud::Server *server = new MediaCloud::Server(serv);
-	
-	server->filesystem->registerDirectory("/home/julian/Musik/");
-	server->filesystem->registerCovers();
-	
-	server->startNetworking();
-	
-	delete server;
 	return 0;
 }

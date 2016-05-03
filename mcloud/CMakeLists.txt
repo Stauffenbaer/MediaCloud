@@ -1,4 +1,4 @@
-add_definitions(-std=c++11 -fpermissive)
+add_definitions(-std=c++11)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
@@ -17,20 +17,12 @@ target_link_libraries(mcloud ${mcloudLIBS})
 
 include(${CMAKE_ROOT}/Modules/FindPkgConfig.cmake)
 
-# Set CMAKE_C_FLAGS variable with info from pkg-util
-execute_process(COMMAND pkg-config --cflags gstreamer-1.0
-                OUTPUT_VARIABLE CMAKE_C_FLAGS)
+execute_process(COMMAND pkg-config --cflags gstreamer-1.0 OUTPUT_VARIABLE CMAKE_C_FLAGS)
 string(REPLACE "\n" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
-message("CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
 
-# Set CMAKE_LINKER_FLAGS variable with info from pkg-util
-execute_process(COMMAND pkg-config --libs gstreamer-1.0
-                OUTPUT_VARIABLE CMAKE_LINKER_FLAGS)
+execute_process(COMMAND pkg-config --libs gstreamer-1.0 OUTPUT_VARIABLE CMAKE_LINKER_FLAGS)
 string(REPLACE "\n" "" CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
-message("CMAKE_LINKER_FLAGS: ${CMAKE_LINKER_FLAGS}")
 
-set_target_properties(mcloud
-                      PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS}
-                                 LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
+set_target_properties(mcloud PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS} LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
 
 add_subdirectory(security)
