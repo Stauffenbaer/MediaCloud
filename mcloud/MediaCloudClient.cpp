@@ -30,17 +30,8 @@ Client::Client(boost::asio::io_service& serv, std::string hostname) :
 	ios(serv),
 	sock(serv)
 {
-	try {
-		boost::asio::ip::tcp::endpoint ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(hostname.c_str()), MCC_PORT);
-		sock.connect(ep);
-	}
-	catch (boost::exception& ex) {
-		QMessageBox box;
-		box.setText((std::string("Cannot connect to: ") + hostname).c_str());
-		box.setWindowTitle("MediaCloud");
-		box.setIcon(QMessageBox::Critical);
-		box.exec();
-	}
+	boost::asio::ip::tcp::endpoint ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(hostname.c_str()), MCC_PORT);
+	sock.connect(ep);
 }
 
 Client::~Client()
@@ -164,7 +155,7 @@ SelectorWindow::~SelectorWindow()
 
 void SelectorWindow::setupWindow()
 {
-	
+	this->close();
 }
 
 bool SelectorWindow::login(std::string username, std::string password)
@@ -173,6 +164,9 @@ bool SelectorWindow::login(std::string username, std::string password)
 	
 	std::string result = client->readString();
 	std::vector<std::string> var = Utils::explode(result, ';');
+	if (var.size() != 2)
+		return false;
+	
 	std::string token = var[0];
 	std::string salt = var[1];
 	std::string passwordHash = LoginProvider::sha1(password);
@@ -200,7 +194,22 @@ void SelectorWindow::lgnPressed()
 	std::string username = selector->edit_user->text().toStdString();
 	std::string password = selector->edit_password->text().toStdString();
 	
-	client = new Client(serv, hostname);
+	try {
+		client = new Client(serv, hostname);
+	}
+	catch (boost::exception& ex) {
+		QMessageBox box;
+		box.setText((std::string("Cannot connect to: ") + hostname).c_str());
+		box.setWindowTitle("MediaCloud");
+		box.setIcon(QMessageBox::Critical);
+		box.exec();
+		
+		return;
+	}
+	
+	if (username.length() == 0 || password.length() == 0)
+		return;
+	
 	std::string version = client->readString();
 	
 	if (login(username, password))
@@ -220,8 +229,23 @@ void SelectorWindow::regPressed()
 	std::string username = selector->edit_user->text().toStdString();
 	std::string password = selector->edit_password->text().toStdString();
 	
-	client = new Client(serv, hostname);
+	try {
+		client = new Client(serv, hostname);
+	}
+	catch (boost::exception& ex) {
+		QMessageBox box;
+		box.setText((std::string("Cannot connect to: ") + hostname).c_str());
+		box.setWindowTitle("MediaCloud");
+		box.setIcon(QMessageBox::Critical);
+		box.exec();
+		
+		return;
+	}
+	
 	std::string version = client->readString();
+	
+	if (username.length() == 0 || password.length() == 0)
+		return;
 	
 	if (usr_register(username, password))
 		setupWindow();
