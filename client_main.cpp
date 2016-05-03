@@ -28,9 +28,16 @@ SOFTWARE.
 
 #include <boost/asio.hpp>
 
+#include <QtGui/QApplication>
+#include <QtGui/QMainWindow>
+
 using namespace MediaCloud;
 
 int main(int argc, char **argv) 
 {
-	return 0;
+	QApplication app(argc, argv);
+	app.setStyle("plastique"); 
+	MainWindow wnd;
+	wnd.show();
+	return app.exec();
 }

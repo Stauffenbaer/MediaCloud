@@ -24,13 +24,64 @@ SOFTWARE.
 
 #pragma once
 
+#define MCC_PORT 1712
+
+#include "MediaCloudUtils.hpp"
+
+#include <QtGui/QMainWindow>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QPushButton>
+#include <QtGui/QLayout>
+#include <QtGui/QDesktopWidget>
+
+#include <boost/asio.hpp>
+
 namespace MediaCloud {
 
 	class Client
 	{
 	public:
-		Client();
+		Client(boost::asio::io_service&, std::string);
 		~Client();
+		
+	protected:
+		byte_buffer readData();
+		void writeData(byte_buffer);
+		
+	private:
+		boost::asio::io_service& ios;
+		boost::asio::ip::tcp::socket sock;
+	};
+	
+	class ServerSelector : public QWidget
+	{
+	public:
+		ServerSelector(QMainWindow*);
+		~ServerSelector();
+		
+	protected:
+		QGridLayout *main_layout;
+		
+		QLabel *label_ip;
+		QLineEdit *edit_ip;
+		
+		QLabel *label_user;
+		QLineEdit *edit_user;
+		
+		QLabel *label_password;
+		QLineEdit *edit_password;
+		
+		QPushButton *button_login;
+		QPushButton *button_register;
+	};
+	
+	class MainWindow : public QMainWindow
+	{
+		Q_OBJECT
+	public:
+		MainWindow();
+		~MainWindow();
 	};
 
 }

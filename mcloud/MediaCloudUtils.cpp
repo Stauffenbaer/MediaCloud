@@ -12,3 +12,8 @@ std::vector<std::string> Utils::explode(std::string s, char delim)
 	
 	return result;
 }
+
+std::string byte_buffer::getString()
+{
+	return std::string(this->buffer);
+}

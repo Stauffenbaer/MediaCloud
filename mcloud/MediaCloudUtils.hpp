@@ -22,4 +22,11 @@ namespace MediaCloud {
 		}
 	};
 	
+	struct byte_buffer {
+		char *buffer;
+		uint64_t length;
+		
+		std::string getString();
+	};
+	
 }

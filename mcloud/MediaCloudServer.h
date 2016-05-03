@@ -66,13 +66,6 @@ namespace MediaCloud {
 	private:
 		std::string server_version = "1.0.0-a";
 		
-		struct byte_buffer {
-			char *buffer;
-			uint64_t length;
-			
-			std::string getString();
-		};
-		
 		class session {
 		public:
 			session(Server*, boost::asio::io_service&);
@@ -111,6 +104,8 @@ namespace MediaCloud {
 		
 		static bool commandHandlerRequestTrack(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerRequestMeta(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerRequestAlben(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerRequestAlbumTracks(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerPause(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerPlay(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerStop(std::string, std::vector<std::string>*, Server::session*);

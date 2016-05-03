@@ -28,7 +28,7 @@ using namespace MediaCloud;
 
 Server::Server(boost::asio::io_service& io_service)
 	:	ios(io_service),
-		acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), MCS_PORT))
+		acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), MCS_PORT))
 {
 	av_register_all();
 	av_log_set_level(AV_LOG_ERROR);
@@ -76,6 +76,8 @@ void Server::InitializeSocket()
 	
 	controlHandlers.push_back(&Server::commandHandlerRequestTrack);
 	controlHandlers.push_back(&Server::commandHandlerRequestMeta);
+	controlHandlers.push_back(&Server::commandHandlerRequestAlben);
+	controlHandlers.push_back(&Server::commandHandlerRequestAlbumTracks);
 	controlHandlers.push_back(&Server::commandHandlerPause);
 	controlHandlers.push_back(&Server::commandHandlerPlay);
 	controlHandlers.push_back(&Server::commandHandlerStop);
@@ -91,11 +93,6 @@ void Server::startAccept()
 	
 	s->disconnect();
 	ios.stop();
-}
-
-std::string Server::byte_buffer::getString()
-{
-	return std::string(this->buffer);
 }
 
 Server::session::session(Server* parent, boost::asio::io_service& service)
@@ -194,7 +191,7 @@ void Server::session::writeString(std::string string)
 	}
 }
 
-void Server::session::writeBuffer(Server::byte_buffer buffer)
+void Server::session::writeBuffer(byte_buffer buffer)
 {
 	try {
 		boost::asio::write(sock, boost::asio::buffer(buffer.buffer, buffer.length));
@@ -204,9 +201,9 @@ void Server::session::writeBuffer(Server::byte_buffer buffer)
 	}
 }
 
-Server::byte_buffer Server::session::read()
+byte_buffer Server::session::read()
 {
-	Server::byte_buffer buf;
+	byte_buffer buf;
 	boost::asio::streambuf *buffer = new boost::asio::streambuf();
 	size_t n = 0;
 	try {
@@ -258,11 +255,65 @@ bool Server::commandHandlerRequestMeta(std::string cmd, std::vector< std::string
 	AudioProvider *audio = sessionptr->parent->audio;
 	
 	Track track;
-	audio->getTrackByID(audio->currentTrack, &track);
+	if (args->size() == 0)
+		audio->getTrackByID(audio->currentTrack, &track);
+	else
+		audio->getTrackByID(atoi((*args)[0].c_str()), &track);
 	
-	sessionptr->writeString(std::string("TITLE:") + track.title + std::string("\n"));
-	sessionptr->writeString(std::string("ARTIST:") + track.artist + std::string("\n"));
-	sessionptr->writeString(std::string("ALBUM:") + track.album + std::string("\n"));
+	std::stringstream meta = std::stringstream();
+	meta << "TITLE:" << track.title << ";";
+	meta << "ARTIST:" << track.artist << ";";
+	meta << "ALBUM:" << track.album << ";";
+	meta << "NUMBER:" << track.tracknr << "\n";
+	
+	sessionptr->writeString(meta.str());
+	return true;
+}
+
+bool Server::commandHandlerRequestAlben(std::string cmd, std::vector<std::string>* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "REQUEST_ALBEN"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	std::stringstream meta = std::stringstream();
+	std::vector<Album> alben = audio->GetAlben();
+	for(auto it = alben.begin(); it != alben.end(); ++it) {
+		Album a = *it;
+		
+		meta << "ID:" << a.ID << ";";
+		meta << "NAME:" << a.name << "\n";
+	}
+	
+	sessionptr->writeString(meta.str());
+	return true;
+}
+
+bool Server::commandHandlerRequestAlbumTracks(std::string cmd, std::vector<std::string>* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "REQUEST_ALBUM_TRACKS"))
+		return false;
+	
+	AudioProvider *audio = sessionptr->parent->audio;
+	
+	Album album;
+	std::vector<Album> alben = audio->GetAlben();
+	for(auto it = alben.begin(); it != alben.end(); ++it) {
+		if (atoi((*args)[0].c_str()) == (*it).ID)
+			album = *it;
+	}
+	
+	std::stringstream tracklist = std::stringstream();
+	
+	for(auto it = album.tracks.begin(); it != album.tracks.end(); ++it) {
+		Track t = *it;
+		
+		tracklist << t.ID << "\n";
+	}
+	
+	sessionptr->writeString(tracklist.str());
+	return true;
 }
 
 bool Server::commandHandlerPause(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
@@ -273,6 +324,8 @@ bool Server::commandHandlerPause(std::string cmd, std::vector< std::string >* ar
 	AudioProvider *audio = sessionptr->parent->audio;
 	
 	audio->pauseState();
+	
+	return true;
 }
 
 bool Server::commandHandlerPlay(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
@@ -283,6 +336,8 @@ bool Server::commandHandlerPlay(std::string cmd, std::vector< std::string >* arg
 	AudioProvider *audio = sessionptr->parent->audio;
 	
 	audio->playState();
+	
+	return true;
 }
 
 bool Server::commandHandlerStop(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
@@ -293,6 +348,8 @@ bool Server::commandHandlerStop(std::string cmd, std::vector< std::string >* arg
 	AudioProvider *audio = sessionptr->parent->audio;
 	
 	audio->stopState();
+	
+	return true;
 }
 
 bool Server::commandHandlerSetVolume(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)

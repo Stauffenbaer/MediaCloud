@@ -26,12 +26,111 @@ SOFTWARE.
 
 using namespace MediaCloud;
 
-Client::Client()
+Client::Client(boost::asio::io_service& serv, std::string hostname) :
+	ios(serv),
+	sock(serv)
 {
-
+	boost::asio::ip::tcp::endpoint ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(hostname.c_str()), MCC_PORT);
+	sock.connect(ep);
 }
 
 Client::~Client()
 {
+	
+}
 
+byte_buffer Client::readData()
+{
+	byte_buffer buf;
+	
+	boost::asio::streambuf *buffer = new boost::asio::streambuf();
+	size_t n = 0;
+	try {
+		n = boost::asio::read(sock, *buffer, boost::asio::transfer_at_least(1));
+	}
+	catch(boost::exception& ex) {
+		return buf;
+	}
+	char *bufferaddr = (char *) boost::asio::buffer_cast<const char *>(buffer->data());
+	buf.length = n + 1;
+	
+	buf.buffer = new char[n + 1];
+	std::copy(bufferaddr, bufferaddr + n, buf.buffer);
+	buf.buffer[n] = 0;
+	
+	delete buffer;
+	
+	return buf;
+}
+
+void Client::writeData(byte_buffer buffer)
+{
+	try {
+		boost::asio::write(sock, boost::asio::buffer(buffer.buffer, buffer.length));
+	}
+	catch(boost::exception& ex) {
+		
+	}
+}
+
+ServerSelector::ServerSelector(QMainWindow* parent) :
+	QWidget(parent)
+{
+	this->setFixedSize(QSize(400, 200));
+	
+	main_layout = new QGridLayout(this);
+	
+	label_ip = new QLabel(this);
+	label_ip->setText("IP-Addresse");
+	
+	edit_ip = new QLineEdit(this);
+	
+	label_user = new QLabel(this);
+	label_user->setText("Username");
+	
+	edit_user = new QLineEdit(this);
+	
+	label_password = new QLabel(this);
+	label_password->setText("Password");
+	
+	edit_password = new QLineEdit(this);
+	edit_password->setEchoMode(QLineEdit::Password);
+	
+	button_login = new QPushButton(this);
+	button_login->setText("Login");
+	
+	button_register = new QPushButton(this);
+	button_register->setText("Register");
+	
+	main_layout->addWidget(label_ip, 0, 0);
+	main_layout->addWidget(edit_ip, 0, 1);
+	
+	main_layout->addWidget(label_user, 1, 0);
+	main_layout->addWidget(edit_user, 1, 1);
+	
+	main_layout->addWidget(label_password, 2, 0);
+	main_layout->addWidget(edit_password, 2, 1);
+	
+	main_layout->addWidget(button_login, 3, 0);
+	main_layout->addWidget(button_register, 3, 1);
+	
+	this->setLayout(main_layout);
+}
+
+ServerSelector::~ServerSelector()
+{
+	
+}
+
+MainWindow::MainWindow()
+{
+	this->setWindowTitle("MediaCloud");
+	
+	ServerSelector *sel = new ServerSelector(this);
+	this->setFixedSize(sel->size());
+}
+
+MainWindow::~MainWindow()
+{
+	
 }
