@@ -142,6 +142,7 @@ ServerSelector::~ServerSelector()
 
 SelectorWindow::SelectorWindow()
 {
+	client = 0;
 	this->setWindowTitle("MediaCloud");
 	
 	selector = new ServerSelector(this);
@@ -150,11 +151,20 @@ SelectorWindow::SelectorWindow()
 
 SelectorWindow::~SelectorWindow()
 {
-	delete client;
+	if (client != 0)
+		delete client;
 }
 
 void SelectorWindow::setupWindow()
 {
+	this->hide();
+	MainWindow wnd;
+	wnd.show();
+	
+	QEventLoop loop;
+    connect(&wnd, SIGNAL(destroyed()), &loop, SLOT(quit()));
+    loop.exec();
+	
 	this->close();
 }
 
@@ -256,4 +266,20 @@ void SelectorWindow::regPressed()
 		box.setIcon(QMessageBox::Critical);
 		box.exec();
 	}
+}
+
+MainWindow::MainWindow() :
+	QMainWindow()
+{
+	this->setWindowTitle("MediaCloud");
+	this->setFixedSize(QSize(800, 600));
+	
+	main_layout = new QGridLayout(this);
+	
+	setLayout(main_layout);
+}
+
+MainWindow::~MainWindow()
+{
+	
 }

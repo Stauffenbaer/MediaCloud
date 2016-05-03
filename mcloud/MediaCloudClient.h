@@ -36,6 +36,9 @@ SOFTWARE.
 #include <QtGui/QLayout>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QMessageBox>
+#include <QtGui/QListWidget>
+
+#include <QtCore/QEventLoop>
 
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
@@ -101,6 +104,17 @@ namespace MediaCloud {
 	private slots:
 		void lgnPressed();
 		void regPressed();
+	};
+	
+	class MainWindow : public QMainWindow
+	{
+		Q_OBJECT
+	public:
+		MainWindow();
+		~MainWindow();
+		
+	protected:
+		QGridLayout *main_layout;
 	};
 
 }
