@@ -96,9 +96,11 @@ namespace MediaCloud {
 		Client *client;
 		
 		bool login(std::string, std::string);
+		bool usr_register(std::string, std::string);
 		
 	private slots:
 		void lgnPressed();
+		void regPressed();
 	};
 
 }

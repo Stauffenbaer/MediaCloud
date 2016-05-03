@@ -13,6 +13,19 @@ std::vector<std::string> Utils::explode(std::string s, char delim)
 	return result;
 }
 
+std::string Utils::replaceAll(std::string s, char a, char b)
+{
+	std::replace(s.begin(), s.end(), a, b);
+	return s;
+}
+
+std::string Utils::deleteAll(std::string s, char c)
+{
+	s.erase(std::remove(s.begin(), s.end(), c), s.end());
+	
+	return s;
+}
+
 std::string byte_buffer::getString()
 {
 	return std::string(this->buffer);

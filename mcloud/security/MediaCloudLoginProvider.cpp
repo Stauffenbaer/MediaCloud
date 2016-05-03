@@ -156,11 +156,11 @@ bool LoginProvider::Register(std::string username, std::string password)
 	query << "SELECT ID FROM tbl_users WHERE username='";
 	query << username << "'";
 	if (db->query(query.str())->rows != 0)
-		return 0;
+		return false;
 	
 	size_t rand = random(11111111, 99999999);
 	std::string hash = sha1((char *) &rand, sizeof(rand));
-	std::string passwordHash = sha1(password);
+	std::string passwordHash = password;
 	
 	query = std::stringstream();
 	query << "INSERT INTO tbl_users (username, password, salt) VALUES ('";

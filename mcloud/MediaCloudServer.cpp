@@ -74,8 +74,6 @@ void Server::InitializeSocket()
 {
 	controlHandlers = std::vector<commandHandler>();
 	
-	controlHandlers.push_back(&Server::commandHandlerRequestLogin);
-	controlHandlers.push_back(&Server::commandHandlerValidateLogin);
 	controlHandlers.push_back(&Server::commandHandlerRequestTrack);
 	controlHandlers.push_back(&Server::commandHandlerRequestMeta);
 	controlHandlers.push_back(&Server::commandHandlerRequestAlben);
@@ -88,6 +86,7 @@ void Server::InitializeSocket()
 
 void Server::startAccept()
 {
+	authentificated = false;
 	session* s = new session(this, ios);
 	acceptor.accept(s->socket());
 	
@@ -152,7 +151,17 @@ void Server::session::start()
 }
 
 void Server::handleCommand(Server::session* sessptr, std::string command, std::vector<std::string> args)
-{	
+{
+	if (!authentificated) {
+		if (commandHandlerRegisterUser(command, &args, sessptr))
+			return;
+		if (commandHandlerRequestLogin(command, &args, sessptr))
+			return;
+		if (commandHandlerValidateLogin(command, &args, sessptr))
+			return;
+		
+		return;
+	}
 	for(auto it = controlHandlers.begin(); it != controlHandlers.end(); ++it) {
 		commandHandler handler = *it;
 		if (handler(command, &args, sessptr))
@@ -232,6 +241,22 @@ boost::asio::ip::tcp::socket& Server::session::socket()
 	return sock;
 }
 
+bool Server::commandHandlerRegisterUser(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "REGISTER_USER"))
+		return false;
+	
+	bool succ = sessionptr->parent->login->Register((*args)[0], (*args)[1]);
+	if (succ) {
+		sessionptr->writeString("TRUE");
+		sessionptr->parent->authentificated = true;
+	}
+	else
+		sessionptr->writeString("FALSE");
+	
+	return true;
+}
+
 bool Server::commandHandlerRequestLogin(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
 {
 	if (!boost::iequals(cmd, "REQUEST_LOGIN"))
@@ -258,8 +283,10 @@ bool Server::commandHandlerValidateLogin(std::string cmd, std::vector< std::stri
 	
 	std::string hash = (*args)[0];
 	bool succ = sessionptr->parent->login->Login("nil", hash);
-	if (succ)
+	if (succ) {
 		sessionptr->writeString("TRUE");
+		sessionptr->parent->authentificated = true;
+	}
 	else
 		sessionptr->writeString("FALSE");
 	

@@ -55,6 +55,8 @@ namespace MediaCloud {
 		LoginProvider *login;
 		AudioProvider *audio;
 		
+		bool authentificated = false;
+		
 		void startNetworking();
 		
 	protected:
@@ -102,6 +104,7 @@ namespace MediaCloud {
 		
 		void startAccept();
 		
+		static bool commandHandlerRegisterUser(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerRequestLogin(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerValidateLogin(std::string, std::vector<std::string>*, Server::session*);
 		

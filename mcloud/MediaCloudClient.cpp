@@ -85,7 +85,11 @@ void Client::writeData(byte_buffer buffer)
 std::string Client::readString()
 {
 	byte_buffer buf = this->readData();
-	return std::string(buf.buffer);
+	std::string s = std::string(buf.buffer);
+	
+	s = Utils::deleteAll(s, '\n');
+	
+	return s;
 }
 
 void Client::writeString(std::string string)
@@ -137,6 +141,7 @@ ServerSelector::ServerSelector(QMainWindow* parent) :
 	this->setLayout(main_layout);
 	
 	connect(button_login, SIGNAL(pressed()), parent, SLOT(lgnPressed()));
+	connect(button_register, SIGNAL(pressed()), parent, SLOT(regPressed()));
 }
 
 ServerSelector::~ServerSelector()
@@ -172,11 +177,19 @@ bool MainWindow::login(std::string username, std::string password)
 	std::string salt = var[1];
 	std::string passwordHash = LoginProvider::sha1(password);
 	std::string passw = LoginProvider::sha1(passwordHash + salt);
-	std::cout << passw << std::endl;
 	std::string hash = LoginProvider::sha1(passw + token);
 	
 	client->writeString(std::string("VALIDATE_LOGIN ") + hash);
 	result = client->readString();
+	
+	return boost::iequals(result, "TRUE");
+}
+
+bool MainWindow::usr_register(std::string username, std::string password)
+{
+	std::string pwHash = LoginProvider::sha1(password);
+	client->writeString(std::string("REGISTER_USER ") + username + " " + pwHash);
+	std::string result = client->readString();
 	
 	return boost::iequals(result, "TRUE");
 }
@@ -191,6 +204,26 @@ void MainWindow::lgnPressed()
 	std::string version = client->readString();
 	
 	if (login(username, password))
+		setupWindow();
+	else {
+		QMessageBox box;
+		box.setText("Cannot login to server!");
+		box.setWindowTitle("MediaCloud");
+		box.setIcon(QMessageBox::Critical);
+		box.exec();
+	}
+}
+
+void MainWindow::regPressed()
+{
+	std::string hostname = selector->edit_ip->text().toStdString();
+	std::string username = selector->edit_user->text().toStdString();
+	std::string password = selector->edit_password->text().toStdString();
+	
+	client = new Client(serv, hostname);
+	std::string version = client->readString();
+	
+	if (usr_register(username, password))
 		setupWindow();
 	else {
 		QMessageBox box;

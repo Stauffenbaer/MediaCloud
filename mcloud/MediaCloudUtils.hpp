@@ -4,12 +4,15 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 namespace MediaCloud {
 	
 	class Utils {
 	public:
 		static std::vector<std::string> explode(std::string, char);
+		static std::string replaceAll(std::string, char, char);
+		static std::string deleteAll(std::string, char);
 		
 		template<typename T>
 		static T clamp(T min, T max, T value)
