@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
 	app.setStyle("plastique"); 
-	MainWindow wnd;
+	SelectorWindow wnd;
 	wnd.show();
 	return app.exec();
 }

@@ -81,12 +81,12 @@ namespace MediaCloud {
 		QPushButton *button_register;
 	};
 	
-	class MainWindow : public QMainWindow
+	class SelectorWindow : public QMainWindow
 	{
 		Q_OBJECT
 	public:
-		MainWindow();
-		~MainWindow();
+		SelectorWindow();
+		~SelectorWindow();
 		
 		void setupWindow();
 		

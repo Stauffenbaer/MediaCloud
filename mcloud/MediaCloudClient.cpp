@@ -149,7 +149,7 @@ ServerSelector::~ServerSelector()
 	
 }
 
-MainWindow::MainWindow()
+SelectorWindow::SelectorWindow()
 {
 	this->setWindowTitle("MediaCloud");
 	
@@ -157,17 +157,17 @@ MainWindow::MainWindow()
 	this->setFixedSize(selector->size());
 }
 
-MainWindow::~MainWindow()
+SelectorWindow::~SelectorWindow()
 {
 	delete client;
 }
 
-void MainWindow::setupWindow()
+void SelectorWindow::setupWindow()
 {
 	
 }
 
-bool MainWindow::login(std::string username, std::string password)
+bool SelectorWindow::login(std::string username, std::string password)
 {
 	client->writeString(std::string("REQUEST_LOGIN ") + username);
 	
@@ -185,7 +185,7 @@ bool MainWindow::login(std::string username, std::string password)
 	return boost::iequals(result, "TRUE");
 }
 
-bool MainWindow::usr_register(std::string username, std::string password)
+bool SelectorWindow::usr_register(std::string username, std::string password)
 {
 	std::string pwHash = LoginProvider::sha1(password);
 	client->writeString(std::string("REGISTER_USER ") + username + " " + pwHash);
@@ -194,7 +194,7 @@ bool MainWindow::usr_register(std::string username, std::string password)
 	return boost::iequals(result, "TRUE");
 }
 
-void MainWindow::lgnPressed()
+void SelectorWindow::lgnPressed()
 {
 	std::string hostname = selector->edit_ip->text().toStdString();
 	std::string username = selector->edit_user->text().toStdString();
@@ -214,7 +214,7 @@ void MainWindow::lgnPressed()
 	}
 }
 
-void MainWindow::regPressed()
+void SelectorWindow::regPressed()
 {
 	std::string hostname = selector->edit_ip->text().toStdString();
 	std::string username = selector->edit_user->text().toStdString();
