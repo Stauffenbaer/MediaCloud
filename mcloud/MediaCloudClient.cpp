@@ -30,8 +30,17 @@ Client::Client(boost::asio::io_service& serv, std::string hostname) :
 	ios(serv),
 	sock(serv)
 {
-	boost::asio::ip::tcp::endpoint ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(hostname.c_str()), MCC_PORT);
-	sock.connect(ep);
+	try {
+		boost::asio::ip::tcp::endpoint ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(hostname.c_str()), MCC_PORT);
+		sock.connect(ep);
+	}
+	catch (boost::exception& ex) {
+		QMessageBox box;
+		box.setText((std::string("Cannot connect to: ") + hostname).c_str());
+		box.setWindowTitle("MediaCloud");
+		box.setIcon(QMessageBox::Critical);
+		box.exec();
+	}
 }
 
 Client::~Client()
@@ -71,6 +80,17 @@ void Client::writeData(byte_buffer buffer)
 	catch(boost::exception& ex) {
 		
 	}
+}
+
+std::string Client::readString()
+{
+	byte_buffer buf = this->readData();
+	return std::string(buf.buffer);
+}
+
+void Client::writeString(std::string string)
+{
+	boost::asio::write(sock, boost::asio::buffer(string.data(), string.size()));
 }
 
 ServerSelector::ServerSelector(QMainWindow* parent) :
@@ -115,6 +135,8 @@ ServerSelector::ServerSelector(QMainWindow* parent) :
 	main_layout->addWidget(button_register, 3, 1);
 	
 	this->setLayout(main_layout);
+	
+	connect(button_login, SIGNAL(pressed()), parent, SLOT(lgnPressed()));
 }
 
 ServerSelector::~ServerSelector()
@@ -126,11 +148,55 @@ MainWindow::MainWindow()
 {
 	this->setWindowTitle("MediaCloud");
 	
-	ServerSelector *sel = new ServerSelector(this);
-	this->setFixedSize(sel->size());
+	selector = new ServerSelector(this);
+	this->setFixedSize(selector->size());
 }
 
 MainWindow::~MainWindow()
 {
+	delete client;
+}
+
+void MainWindow::setupWindow()
+{
 	
+}
+
+bool MainWindow::login(std::string username, std::string password)
+{
+	client->writeString(std::string("REQUEST_LOGIN ") + username);
+	
+	std::string result = client->readString();
+	std::vector<std::string> var = Utils::explode(result, ';');
+	std::string token = var[0];
+	std::string salt = var[1];
+	std::string passwordHash = LoginProvider::sha1(password);
+	std::string passw = LoginProvider::sha1(passwordHash + salt);
+	std::cout << passw << std::endl;
+	std::string hash = LoginProvider::sha1(passw + token);
+	
+	client->writeString(std::string("VALIDATE_LOGIN ") + hash);
+	result = client->readString();
+	
+	return boost::iequals(result, "TRUE");
+}
+
+void MainWindow::lgnPressed()
+{
+	std::string hostname = selector->edit_ip->text().toStdString();
+	std::string username = selector->edit_user->text().toStdString();
+	std::string password = selector->edit_password->text().toStdString();
+	
+	client = new Client(serv, hostname);
+	std::string version = client->readString();
+	
+	if (login(username, password))
+		setupWindow();
+	else {
+		QMessageBox box;
+		box.setText("Cannot login to server!");
+		box.setWindowTitle("MediaCloud");
+		box.setIcon(QMessageBox::Critical);
+		box.exec();
+	}
 }

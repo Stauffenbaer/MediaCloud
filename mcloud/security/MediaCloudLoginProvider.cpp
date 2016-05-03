@@ -111,27 +111,46 @@ LoginProvider::~LoginProvider()
 	delete perm;
 }
 
-LoginToken* LoginProvider::Login(std::string username, std::string password)
+void LoginProvider::setLoginToken(size_t n)
+{
+	this->loginToken = n;
+}
+
+void LoginProvider::setLoginUser(std::string username)
+{
+	user = username;
+}
+
+std::string LoginProvider::getLoginSalt(std::string username)
 {
 	std::stringstream query = std::stringstream();
-	query << "SELECT salt, password FROM tbl_users WHERE username='";
+	query << "SELECT salt FROM tbl_users WHERE username='";
 	query << username << "'";
 	
 	Result *res = db->query(query.str());
 	if (res->rows == 0)
-		return 0;
+		return "";
 	
-	std::string salt = res->data[0].columns[0];
-	
-	std::string passwordHash = sha1(sha1(password) + salt);
-	
-	if (passwordHash != res->data[0].columns[1])
-		return 0;
-	
-	return this->createToken(16);
+	return res->data[0].columns[0];
 }
 
-LoginToken* LoginProvider::Register(std::string username, std::string password)
+bool LoginProvider::Login(std::string username, std::string passwordHashToken)
+{
+	if (username == "nil")
+		username = user;
+	
+	std::stringstream query = std::stringstream();
+	query << "SELECT password FROM tbl_users WHERE username='" << username << "'";
+	Result *res = db->query(query.str());
+	
+	std::string password = res->getData(0, 0);
+	std::string token = std::to_string(loginToken);
+	std::string fin = sha1(password + token);
+	
+	return fin == passwordHashToken;
+}
+
+bool LoginProvider::Register(std::string username, std::string password)
 {
 	std::stringstream query = std::stringstream();
 	query << "SELECT ID FROM tbl_users WHERE username='";
@@ -152,20 +171,5 @@ LoginToken* LoginProvider::Register(std::string username, std::string password)
 	
 	perm->registerUser(username);
 	
-	return this->Login(username, password);
-}
-
-LoginToken* LoginProvider::createToken(int security)
-{
-	size_t max = (pow10(security)) - 1;
-	size_t min = max / 9;
-	size_t rand = random(min, max);
-	std::string hash = sha1((char *) &rand, sizeof(rand));
-	
-	LoginToken *token = new LoginToken();
-	token->data = (char *) hash.c_str();
-	token->length = sizeof(token->data);
-	token->string = hash;
-	
-	return token;
+	return true;
 }

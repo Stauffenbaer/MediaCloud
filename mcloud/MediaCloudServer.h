@@ -102,6 +102,9 @@ namespace MediaCloud {
 		
 		void startAccept();
 		
+		static bool commandHandlerRequestLogin(std::string, std::vector<std::string>*, Server::session*);
+		static bool commandHandlerValidateLogin(std::string, std::vector<std::string>*, Server::session*);
+		
 		static bool commandHandlerRequestTrack(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerRequestMeta(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerRequestAlben(std::string, std::vector<std::string>*, Server::session*);

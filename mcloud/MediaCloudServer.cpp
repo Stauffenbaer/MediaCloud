@@ -74,6 +74,8 @@ void Server::InitializeSocket()
 {
 	controlHandlers = std::vector<commandHandler>();
 	
+	controlHandlers.push_back(&Server::commandHandlerRequestLogin);
+	controlHandlers.push_back(&Server::commandHandlerValidateLogin);
 	controlHandlers.push_back(&Server::commandHandlerRequestTrack);
 	controlHandlers.push_back(&Server::commandHandlerRequestMeta);
 	controlHandlers.push_back(&Server::commandHandlerRequestAlben);
@@ -228,6 +230,40 @@ byte_buffer Server::session::read()
 boost::asio::ip::tcp::socket& Server::session::socket()
 {
 	return sock;
+}
+
+bool Server::commandHandlerRequestLogin(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "REQUEST_LOGIN"))
+		return false;
+	
+	size_t n = LoginProvider::random(11111111, 99999999);
+	
+	sessionptr->parent->login->setLoginToken(n);
+	sessionptr->parent->login->setLoginUser((*args)[0]);
+	
+	std::string salt = sessionptr->parent->login->getLoginSalt((*args)[0]);
+	
+	std::stringstream stream = std::stringstream();
+	stream << std::to_string(n) << ";" << salt << "\n";
+	
+	sessionptr->writeString(stream.str());
+	return true;
+}
+
+bool Server::commandHandlerValidateLogin(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "VALIDATE_LOGIN"))
+		return false;
+	
+	std::string hash = (*args)[0];
+	bool succ = sessionptr->parent->login->Login("nil", hash);
+	if (succ)
+		sessionptr->writeString("TRUE");
+	else
+		sessionptr->writeString("FALSE");
+	
+	return true;
 }
 
 bool Server::commandHandlerRequestTrack(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)

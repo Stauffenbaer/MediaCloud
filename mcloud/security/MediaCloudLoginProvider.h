@@ -36,20 +36,19 @@ SOFTWARE.
 
 namespace MediaCloud {
 	
-	struct LoginToken {
-		char *data;
-		size_t length;
-		std::string string;
-	};
-	
 	class LoginProvider
 	{
 	public:
 		LoginProvider(Database*);
 		~LoginProvider();
 		
-		LoginToken* Login(std::string, std::string);
-		LoginToken* Register(std::string, std::string);
+		bool Login(std::string, std::string);
+		bool Register(std::string, std::string);
+		
+		void setLoginToken(size_t);
+		void setLoginUser(std::string);
+		
+		std::string getLoginSalt(std::string);
 		
 		static std::string sha1(char*, size_t);
 		static std::string sha1(std::string);
@@ -61,7 +60,8 @@ namespace MediaCloud {
 		PermissionProvider *perm;
 		
 	private:
-		LoginToken* createToken(int);
+		size_t loginToken;
+		std::string user;
 	};
 
 }

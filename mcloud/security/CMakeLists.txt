@@ -10,4 +10,4 @@ set(boostlibs ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBR
 set(libs ${boostlibs} sqlite3 avutil avcodec avformat)
 
 add_library(security ${src})
-target_link_libraries(security ${libs})
+target_link_libraries(security ${libs} mcloud)

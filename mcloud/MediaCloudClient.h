@@ -27,6 +27,7 @@ SOFTWARE.
 #define MCC_PORT 1712
 
 #include "MediaCloudUtils.hpp"
+#include "security/MediaCloudLoginProvider.h"
 
 #include <QtGui/QMainWindow>
 #include <QtGui/QLabel>
@@ -34,8 +35,10 @@ SOFTWARE.
 #include <QtGui/QPushButton>
 #include <QtGui/QLayout>
 #include <QtGui/QDesktopWidget>
+#include <QtGui/QMessageBox>
 
 #include <boost/asio.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace MediaCloud {
 
@@ -44,6 +47,9 @@ namespace MediaCloud {
 	public:
 		Client(boost::asio::io_service&, std::string);
 		~Client();
+		
+		std::string readString();
+		void writeString(std::string);
 		
 	protected:
 		byte_buffer readData();
@@ -60,17 +66,16 @@ namespace MediaCloud {
 		ServerSelector(QMainWindow*);
 		~ServerSelector();
 		
+		QLineEdit *edit_ip;
+		QLineEdit *edit_user;
+		QLineEdit *edit_password;
+		
 	protected:
 		QGridLayout *main_layout;
 		
 		QLabel *label_ip;
-		QLineEdit *edit_ip;
-		
 		QLabel *label_user;
-		QLineEdit *edit_user;
-		
 		QLabel *label_password;
-		QLineEdit *edit_password;
 		
 		QPushButton *button_login;
 		QPushButton *button_register;
@@ -82,6 +87,18 @@ namespace MediaCloud {
 	public:
 		MainWindow();
 		~MainWindow();
+		
+		void setupWindow();
+		
+	private:
+		boost::asio::io_service serv;
+		ServerSelector *selector;
+		Client *client;
+		
+		bool login(std::string, std::string);
+		
+	private slots:
+		void lgnPressed();
 	};
 
 }
