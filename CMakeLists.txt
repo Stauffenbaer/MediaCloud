@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 project(mediacloud)
 
+set(CMAKE_C_COMPILER /usr/bin/gcc-5)
+set(CMAKE_CXX_COMPILER /usr/bin/g++-5)
+
 set(CMAKE_AUTOMOC ON)
 
 execute_process(COMMAND pkg-config --cflags gstreamer-1.0 OUTPUT_VARIABLE CMAKE_C_FLAGS)
