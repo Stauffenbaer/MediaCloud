@@ -270,18 +270,48 @@ void SelectorWindow::regPressed()
 	}
 }
 
+MainWidget::MainWidget(QMainWindow* parent) :
+	QWidget(parent)
+{
+	resize(QSize(800, 600));
+	
+	sidebar_frame = new QFrame(this); sidebar_frame->setStyleSheet("background-color:fuchsia;");
+	content_frame = new QFrame(this); content_frame->setStyleSheet("background-color:red;");
+	player_frame = new QFrame(this); player_frame->setStyleSheet("background-color:green;");
+	
+	sidebar_frame->setFixedWidth(200);
+	player_frame->setFixedHeight(50);
+	
+	main_layout = new QGridLayout(this);
+	
+	main_layout->addWidget(sidebar_frame, 0, 0, 0, 1);
+	main_layout->addWidget(content_frame, 0, 1);
+	main_layout->addWidget(player_frame, 1, 1);
+	
+	this->setLayout(main_layout);
+}
+
+MainWidget::~MainWidget()
+{
+	
+}
+
 MainWindow::MainWindow() :
 	QMainWindow()
 {
 	this->setWindowTitle("MediaCloud");
-	this->setFixedSize(QSize(800, 600));
 	
-	main_layout = new QGridLayout(this);
-	
-	setLayout(main_layout);
+	widget = new MainWidget(this);
+	resize(widget->size());
 }
 
 MainWindow::~MainWindow()
 {
 	
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+	QWidget::resizeEvent(event);
+	widget->resize(event->size());
 }

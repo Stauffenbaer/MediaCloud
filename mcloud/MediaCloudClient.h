@@ -37,6 +37,8 @@ SOFTWARE.
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QMessageBox>
 #include <QtGui/QListWidget>
+#include <QtGui/QSizePolicy>
+#include <QtGui/QResizeEvent>
 
 #include <QtCore/QEventLoop>
 
@@ -106,6 +108,18 @@ namespace MediaCloud {
 		void regPressed();
 	};
 	
+	class MainWidget : public QWidget
+	{
+	public:
+		MainWidget(QMainWindow*);
+		~MainWidget();
+		
+	protected:
+		QGridLayout *main_layout;
+		
+		QFrame *sidebar_frame, *content_frame, *player_frame;
+	};
+	
 	class MainWindow : public QMainWindow
 	{
 		Q_OBJECT
@@ -114,7 +128,8 @@ namespace MediaCloud {
 		~MainWindow();
 		
 	protected:
-		QGridLayout *main_layout;
+		MainWidget *widget;
+		void resizeEvent(QResizeEvent*);
 	};
 
 }
