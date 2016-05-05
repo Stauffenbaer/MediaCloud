@@ -35,8 +35,13 @@ int main(int argc, char **argv)
 	boost::asio::io_service serv;
 	MediaCloud::Server *server = new MediaCloud::Server(serv);
 	
-	server->filesystem->registerDirectory("/home/julian/Musik/");
-	server->filesystem->registerCovers();
+	if (server->settings->HasKey(MCD_ENTRY_ROOT_DIRECTORY)) {
+		std::string *root = server->settings->GetValue(MCD_ENTRY_ROOT_DIRECTORY);
+		if (root != 0) {
+			server->filesystem->registerDirectory(*root);
+			server->filesystem->registerCovers();
+		}
+	}
 	
 	server->startNetworking();
 	

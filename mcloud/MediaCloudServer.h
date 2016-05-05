@@ -116,6 +116,8 @@ namespace MediaCloud {
 		static bool commandHandlerPlay(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerStop(std::string, std::vector<std::string>*, Server::session*);
 		static bool commandHandlerSetVolume(std::string, std::vector<std::string>*, Server::session*);
+		
+		static bool commandHandlerSettingsSet(std::string, std::vector<std::string>*, Server::session*);
 	};
 
 }

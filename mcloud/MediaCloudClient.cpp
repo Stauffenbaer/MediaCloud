@@ -165,12 +165,14 @@ void SelectorWindow::setupWindow()
     connect(&wnd, SIGNAL(destroyed()), &loop, SLOT(quit()));
     loop.exec();
 	
+	client->writeString("QUIT");
+	
 	this->close();
 }
 
 bool SelectorWindow::login(std::string username, std::string password)
 {
-	client->writeString(std::string("REQUEST_LOGIN ") + username);
+	client->writeString(std::string("REQUEST_LOGIN~") + username);
 	
 	std::string result = client->readString();
 	std::vector<std::string> var = Utils::explode(result, ';');
@@ -183,7 +185,7 @@ bool SelectorWindow::login(std::string username, std::string password)
 	std::string passw = LoginProvider::sha1(passwordHash + salt);
 	std::string hash = LoginProvider::sha1(passw + token);
 	
-	client->writeString(std::string("VALIDATE_LOGIN ") + hash);
+	client->writeString(std::string("VALIDATE_LOGIN~") + hash);
 	result = client->readString();
 	
 	return boost::iequals(result, "TRUE");
@@ -192,7 +194,7 @@ bool SelectorWindow::login(std::string username, std::string password)
 bool SelectorWindow::usr_register(std::string username, std::string password)
 {
 	std::string pwHash = LoginProvider::sha1(password);
-	client->writeString(std::string("REGISTER_USER ") + username + " " + pwHash);
+	client->writeString(std::string("REGISTER_USER~") + username + "~" + pwHash);
 	std::string result = client->readString();
 	
 	return boost::iequals(result, "TRUE");

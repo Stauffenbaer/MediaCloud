@@ -39,6 +39,8 @@ namespace MediaCloud {
  		std::string* GetValue(std::string);
 		void SetValue(std::string, std::string);
 		
+		bool HasKey(std::string);
+		
 		
 	protected:
 		Database* db;
