@@ -208,6 +208,22 @@ void SelectorWindow::lgnPressed()
 	
 	try {
 		client = new Client(serv, hostname);
+		
+		if (username.length() == 0 || password.length() == 0)
+		return;
+	
+		std::string version = client->readString();
+		
+		if (login(username, password))
+			setupWindow();
+		else {
+			delete client;
+			QMessageBox box;
+			box.setText("Cannot login to server!");
+			box.setWindowTitle("MediaCloud");
+			box.setIcon(QMessageBox::Critical);
+			box.exec();
+		}
 	}
 	catch (boost::exception& ex) {
 		QMessageBox box;
@@ -217,21 +233,6 @@ void SelectorWindow::lgnPressed()
 		box.exec();
 		
 		return;
-	}
-	
-	if (username.length() == 0 || password.length() == 0)
-		return;
-	
-	std::string version = client->readString();
-	
-	if (login(username, password))
-		setupWindow();
-	else {
-		QMessageBox box;
-		box.setText("Cannot login to server!");
-		box.setWindowTitle("MediaCloud");
-		box.setIcon(QMessageBox::Critical);
-		box.exec();
 	}
 }
 
@@ -243,6 +244,22 @@ void SelectorWindow::regPressed()
 	
 	try {
 		client = new Client(serv, hostname);
+		
+		std::string version = client->readString();
+		
+		if (username.length() == 0 || password.length() == 0)
+			return;
+		
+		if (usr_register(username, password))
+			setupWindow();
+		else {
+			delete client;
+			QMessageBox box;
+			box.setText("Cannot login to server!");
+			box.setWindowTitle("MediaCloud");
+			box.setIcon(QMessageBox::Critical);
+			box.exec();
+		}
 	}
 	catch (boost::exception& ex) {
 		QMessageBox box;
@@ -252,21 +269,6 @@ void SelectorWindow::regPressed()
 		box.exec();
 		
 		return;
-	}
-	
-	std::string version = client->readString();
-	
-	if (username.length() == 0 || password.length() == 0)
-		return;
-	
-	if (usr_register(username, password))
-		setupWindow();
-	else {
-		QMessageBox box;
-		box.setText("Cannot login to server!");
-		box.setWindowTitle("MediaCloud");
-		box.setIcon(QMessageBox::Critical);
-		box.exec();
 	}
 }
 
