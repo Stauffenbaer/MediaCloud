@@ -118,6 +118,8 @@ namespace MediaCloud {
 		QGridLayout *main_layout;
 		
 		QFrame *sidebar_frame, *content_frame, *player_frame;
+		
+		QGridLayout *sidebar_layout, *content_layout, *player_layout;
 	};
 	
 	class MainWindow : public QMainWindow

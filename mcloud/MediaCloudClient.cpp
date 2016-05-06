@@ -279,10 +279,28 @@ MainWidget::MainWidget(QMainWindow* parent) :
 	content_frame = new QFrame(this); content_frame->setStyleSheet("background-color:red;");
 	player_frame = new QFrame(this); player_frame->setStyleSheet("background-color:green;");
 	
-	sidebar_frame->setFixedWidth(200);
-	player_frame->setFixedHeight(50);
+	sidebar_frame->setFixedWidth(200); player_frame->setFixedHeight(50);
+	
+	sidebar_layout = new QGridLayout(sidebar_frame);
+	
+	//TODO: add sidebar
+	
+	sidebar_frame->setLayout(sidebar_layout);
+	
+	content_layout = new QGridLayout(content_frame);
+	
+	//TODO: add content
+	
+	content_frame->setLayout(content_layout);
+	
+	player_layout = new QGridLayout(player_frame);
+	
+	//TODO: add player
+	
+	player_frame->setLayout(player_layout);
 	
 	main_layout = new QGridLayout(this);
+	main_layout->setMargin(0);
 	
 	main_layout->addWidget(sidebar_frame, 0, 0, 0, 1);
 	main_layout->addWidget(content_frame, 0, 1);
