@@ -42,7 +42,7 @@ namespace MediaCloud {
 		static std::string replaceAll(std::string, char, char);
 		static std::string deleteAll(std::string, char);
 		
-		static std::string loadStylesheet(std::string);
+		static std::string loadFile(std::string);
 		
 		template<typename T>
 		static T clamp(T min, T max, T value)

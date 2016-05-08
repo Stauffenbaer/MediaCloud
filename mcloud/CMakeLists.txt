@@ -10,7 +10,7 @@ find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(mcloudSRC MediaCloudSettings.cpp MediaCloudFilesystem.cpp MediaCloudDecoder.cpp MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp MediaCloudDecoder.cpp MediaCloudAudioPlayer.cpp MediaCloudAudioProvider.cpp MediaCloudUtils.cpp)
+set(mcloudSRC MediaCloudSettings.cpp MediaCloudFilesystem.cpp MediaCloudDecoder.cpp MediaCloudDatabase.cpp MediaCloudServer.cpp MediaCloudClient.cpp MediaCloudDecoder.cpp MediaCloudAudioPlayer.cpp MediaCloudAudioProvider.cpp MediaCloudUtils.cpp MediaCloudLanguageProvider.cpp)
 set(mcloudboost ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 set(mcloudLIBS ${mcloudboost} sqlite3 avutil avformat)
 

@@ -22,49 +22,51 @@ SOFTWARE.
 
 */
 
+#pragma once
+
 #include "MediaCloudUtils.hpp"
 
-using namespace MediaCloud;
+#include <string>
+#include <vector>
 
-std::vector<std::string> Utils::explode(std::string s, char delim)
-{
-	std::vector<std::string> result;
-	std::istringstream iss(s);
-	
-	for (std::string token; std::getline(iss, token, delim);)
-		result.push_back(std::move(token));
-	
-	return result;
-}
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
-std::string Utils::replaceAll(std::string s, char a, char b)
-{
-	std::replace(s.begin(), s.end(), a, b);
-	return s;
-}
-
-std::string Utils::deleteAll(std::string s, char c)
-{
-	s.erase(std::remove(s.begin(), s.end(), c), s.end());
+namespace MediaCloud {
 	
-	return s;
-}
-
-std::string Utils::loadFile(std::string path)
-{
-	std::fstream file = std::fstream(path.c_str(), std::ios::in);
-	std::string content = "";
+	struct LanguagePair
+	{
+		std::string language = "";
+		std::string identifier = "";
+	};
 	
-	std::string line;
-	while(std::getline(file, line)) {
-		content += line;
-	}
-	file.close();
+	struct LanguageDataPair
+	{
+		std::string key = "";
+		std::string value = "";
+	};
 	
-	return content;
-}
-
-std::string byte_buffer::getString()
-{
-	return std::string(this->buffer);
+	class LanguageProvider
+	{
+	public:
+		LanguageProvider();
+		~LanguageProvider();
+		
+		void loadLanguage(std::string);
+		std::string getValue(std::string);
+		
+	private:
+		const std::string& languageBasePath = "data/resources/lang/";
+		const std::string& languagesPath = "data/resources/languages.xml";
+		
+		std::string data;
+		std::vector<LanguageDataPair> dataPairs;
+		
+		std::string getIdentifier(std::string);
+		
+		void registerAllLanguages();
+		std::vector<LanguagePair> languages;
+	};
+	
 }
