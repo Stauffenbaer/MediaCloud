@@ -108,6 +108,19 @@ namespace MediaCloud {
 		void regPressed();
 	};
 	
+	class SidebarWidget : public QWidget
+	{
+	public:
+		SidebarWidget(QWidget*);
+		~SidebarWidget();
+		
+	protected:
+		QGridLayout *main_layout;
+		
+		QFrame *media_selector;
+		QLabel *media_music;
+	};
+	
 	class MainWidget : public QWidget
 	{
 	public:
@@ -117,9 +130,10 @@ namespace MediaCloud {
 	protected:
 		QGridLayout *main_layout;
 		
-		QFrame *sidebar_frame, *content_frame, *player_frame;
+		QFrame *content_frame, *player_frame;
+		SidebarWidget *sidebar;
 		
-		QGridLayout *sidebar_layout, *content_layout, *player_layout;
+		QGridLayout *content_layout, *player_layout;
 	};
 	
 	class MainWindow : public QMainWindow

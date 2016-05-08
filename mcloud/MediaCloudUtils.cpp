@@ -50,6 +50,20 @@ std::string Utils::deleteAll(std::string s, char c)
 	return s;
 }
 
+std::string Utils::loadStylesheet(std::string path)
+{
+	std::fstream file = std::fstream(path.c_str(), std::ios::in);
+	std::string content = "";
+	
+	std::string line;
+	while(std::getline(file, line)) {
+		content += line;
+	}
+	file.close();
+	
+	return content;
+}
+
 std::string byte_buffer::getString()
 {
 	return std::string(this->buffer);

@@ -131,8 +131,10 @@ ServerSelector::ServerSelector(QMainWindow* parent) :
 	
 	this->setLayout(main_layout);
 	
-	connect(button_login, SIGNAL(pressed()), parent, SLOT(lgnPressed()));
-	connect(button_register, SIGNAL(pressed()), parent, SLOT(regPressed()));
+	button_login->setDefault(true);
+	
+	connect(button_login, SIGNAL(clicked()), parent, SLOT(lgnPressed()));
+	connect(button_register, SIGNAL(clicked()), parent, SLOT(regPressed()));
 }
 
 ServerSelector::~ServerSelector()
@@ -272,22 +274,46 @@ void SelectorWindow::regPressed()
 	}
 }
 
+SidebarWidget::SidebarWidget(QWidget* parent) :
+	QWidget(parent)
+{
+	media_selector = new QFrame(this);
+	media_selector->setFixedHeight(100);
+	QGridLayout *selector_layout = new QGridLayout(this);
+	
+	media_music = new QLabel(this);
+	media_music->setText("Musik");
+	media_music->setFixedHeight(25);
+	media_music->setStyleSheet("background-color:red; color:black;");
+	
+	selector_layout->addWidget(media_music, 0, 0, Qt::AlignTop);
+	
+	media_selector->setLayout(selector_layout);
+	
+	main_layout = new QGridLayout(this);
+	
+	main_layout->addWidget(media_selector, 0, 0, Qt::AlignTop);
+	
+	setLayout(main_layout);
+	
+	media_selector->setStyleSheet("background-color:black;");
+}
+
+SidebarWidget::~SidebarWidget()
+{
+	
+}
+
 MainWidget::MainWidget(QMainWindow* parent) :
 	QWidget(parent)
 {
 	resize(QSize(800, 600));
 	
-	sidebar_frame = new QFrame(this); sidebar_frame->setStyleSheet("background-color:fuchsia;");
+	sidebar = new SidebarWidget(this); sidebar->setStyleSheet("background-color:fuchsia;");
 	content_frame = new QFrame(this); content_frame->setStyleSheet("background-color:red;");
 	player_frame = new QFrame(this); player_frame->setStyleSheet("background-color:green;");
 	
-	sidebar_frame->setFixedWidth(200); player_frame->setFixedHeight(50);
-	
-	sidebar_layout = new QGridLayout(sidebar_frame);
-	
-	//TODO: add sidebar
-	
-	sidebar_frame->setLayout(sidebar_layout);
+	sidebar->setFixedWidth(200); player_frame->setFixedHeight(50);
 	
 	content_layout = new QGridLayout(content_frame);
 	
@@ -304,7 +330,7 @@ MainWidget::MainWidget(QMainWindow* parent) :
 	main_layout = new QGridLayout(this);
 	main_layout->setMargin(0);
 	
-	main_layout->addWidget(sidebar_frame, 0, 0, 0, 1);
+	main_layout->addWidget(sidebar, 0, 0, 0, 1);
 	main_layout->addWidget(content_frame, 0, 1);
 	main_layout->addWidget(player_frame, 1, 1);
 	

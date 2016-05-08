@@ -84,7 +84,7 @@ namespace MediaCloud {
 		Database *db;
 		
 	private:
-		const std::string& extensionPath = "data/extensions.xml";
+		const std::string& extensionPath = "data/resources/extensions.xml";
 		
 		std::string getType(std::string);
 		
