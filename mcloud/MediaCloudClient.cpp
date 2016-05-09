@@ -143,6 +143,8 @@ ServerSelector::ServerSelector(QMainWindow* parent) :
 	
 	connect(button_login, SIGNAL(clicked()), parent, SLOT(lgnPressed()));
 	connect(button_register, SIGNAL(clicked()), parent, SLOT(regPressed()));
+	
+	connect(edit_password, SIGNAL(returnPressed()), button_login, SIGNAL(clicked()));
 }
 
 ServerSelector::~ServerSelector()
