@@ -40,6 +40,7 @@ SOFTWARE.
 #include <QtGui/QListWidget>
 #include <QtGui/QSizePolicy>
 #include <QtGui/QResizeEvent>
+#include <QtGui/QCheckBox>
 
 #include <QtCore/QEventLoop>
 
@@ -79,6 +80,8 @@ namespace MediaCloud {
 		QLineEdit *edit_ip;
 		QLineEdit *edit_user;
 		QLineEdit *edit_password;
+		
+		QCheckBox *checkbox;
 		
 	protected:
 		QGridLayout *main_layout;

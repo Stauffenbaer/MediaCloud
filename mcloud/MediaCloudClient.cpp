@@ -119,6 +119,10 @@ ServerSelector::ServerSelector(QMainWindow* parent) :
 	button_register = new QPushButton(this);
 	button_register->setText(Provider::lang->getValue("client.login_register_btn").c_str());
 	
+	checkbox = new QCheckBox(this);
+	checkbox->setText(Provider::lang->getValue("client.login_remember").c_str());
+	checkbox->setCheckState(Qt::Checked);
+	
 	main_layout->addWidget(label_ip, 0, 0);
 	main_layout->addWidget(edit_ip, 0, 1);
 	
@@ -128,8 +132,10 @@ ServerSelector::ServerSelector(QMainWindow* parent) :
 	main_layout->addWidget(label_password, 2, 0);
 	main_layout->addWidget(edit_password, 2, 1);
 	
-	main_layout->addWidget(button_login, 3, 0);
-	main_layout->addWidget(button_register, 3, 1);
+	main_layout->addWidget(checkbox, 3, 0);
+	
+	main_layout->addWidget(button_login, 4, 0);
+	main_layout->addWidget(button_register, 4, 1);
 	
 	this->setLayout(main_layout);
 	
@@ -151,6 +157,13 @@ SelectorWindow::SelectorWindow()
 	
 	selector = new ServerSelector(this);
 	this->setFixedSize(selector->size());
+	
+	if (boost::filesystem::exists("data/credentials")) {
+		std::string content = Utils::loadFile("data/credentials");
+		std::vector<std::string> elements = Utils::explode(content, '\n');
+		selector->edit_ip->setText(elements[0].c_str());
+		selector->edit_user->setText(elements[1].c_str());
+	}
 }
 
 SelectorWindow::~SelectorWindow()
@@ -218,8 +231,19 @@ void SelectorWindow::lgnPressed()
 	
 		std::string version = client->readString();
 		
-		if (login(username, password))
+		if (login(username, password)) {
+			if (selector->checkbox->isChecked()) {
+				std::stringstream str = std::stringstream();
+				str << selector->edit_ip->text().toStdString() << "\n";
+				str << selector->edit_user->text().toStdString();
+				std::string s = str.str();
+				std::fstream fs = std::fstream("data/credentials", std::ios::out);
+				fs.clear();
+				fs.write(s.data(), s.size());
+				fs.close();
+			}
 			setupWindow();
+		}
 		else {
 			delete client;
 			QMessageBox box;
@@ -280,13 +304,13 @@ SidebarWidget::SidebarWidget(QWidget* parent) :
 	QWidget(parent)
 {
 	media_selector = new QFrame(this);
+	media_selector->setObjectName("media_selector");
 	media_selector->setFixedHeight(100);
 	QGridLayout *selector_layout = new QGridLayout(this);
 	
-	media_music = new QLabel(this);
-	media_music->setText("Musik");
+	media_music = new QLabel("media_music", this);
+	media_music->setText(Provider::lang->getValue("client.media_selector.music").c_str());
 	media_music->setFixedHeight(25);
-	media_music->setStyleSheet("background-color:red; color:black;");
 	
 	selector_layout->addWidget(media_music, 0, 0, Qt::AlignTop);
 	
@@ -298,7 +322,7 @@ SidebarWidget::SidebarWidget(QWidget* parent) :
 	
 	setLayout(main_layout);
 	
-	media_selector->setStyleSheet("background-color:black;");
+	this->setObjectName("sidebar");
 }
 
 SidebarWidget::~SidebarWidget()
@@ -311,9 +335,9 @@ MainWidget::MainWidget(QMainWindow* parent) :
 {
 	resize(QSize(800, 600));
 	
-	sidebar = new SidebarWidget(this); sidebar->setStyleSheet("background-color:fuchsia;");
-	content_frame = new QFrame(this); content_frame->setStyleSheet("background-color:red;");
-	player_frame = new QFrame(this); player_frame->setStyleSheet("background-color:green;");
+	sidebar = new SidebarWidget(this);
+	content_frame = new QFrame(this);
+	player_frame = new QFrame(this);
 	
 	sidebar->setFixedWidth(200); player_frame->setFixedHeight(50);
 	
@@ -337,6 +361,9 @@ MainWidget::MainWidget(QMainWindow* parent) :
 	main_layout->addWidget(player_frame, 1, 1);
 	
 	this->setLayout(main_layout);
+	
+	this->setObjectName("main_widget");
+	this->setStyleSheet(Utils::deleteAll(Utils::loadFile("data/resources/style/client.css"), '\n').c_str());
 }
 
 MainWidget::~MainWidget()

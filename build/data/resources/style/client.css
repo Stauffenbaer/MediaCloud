@@ -1,0 +1,16 @@
+QWidget#main_widget {
+	background-color: #212121;
+}
+
+QWidget#sidebar {
+	background-color: #111111;
+}
+
+QFrame#media_selector {
+	background-color: #212121;
+}
+
+QFrame#media_selector QLabel {
+	color: #fafafa;
+	font: Arial;
+}

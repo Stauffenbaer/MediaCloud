@@ -1,4 +1,5 @@
 .kdev4/
 build/*
 build/data/mediacloud.db
+build/data/credentials
 !build/data/

@@ -51,8 +51,14 @@ void LanguageProvider::loadLanguage(std::string name)
 	
 	for(size_t i = 0;i < lines.size(); ++i)
 	{
-		LanguageDataPair l = LanguageDataPair();
+		if (lines[i].substr(0, 1) == "#")
+			continue;
+		
 		std::vector<std::string> elements = Utils::explode(lines[i], '=');
+		if (elements.size() != 2)
+			continue;
+		
+		LanguageDataPair l = LanguageDataPair();
 		l.key = elements[0];
 		l.value = elements[1];
 		
@@ -71,8 +77,14 @@ void LanguageProvider::loadByIdentifier(std::string identifier)
 	
 	for(size_t i = 0;i < lines.size(); ++i)
 	{
-		LanguageDataPair l = LanguageDataPair();
+		if (lines[i].substr(0, 1) == "#")
+			continue;
+		
 		std::vector<std::string> elements = Utils::explode(lines[i], '=');
+		if (elements.size() != 2)
+			continue;
+		
+		LanguageDataPair l = LanguageDataPair();
 		l.key = elements[0];
 		l.value = elements[1];
 		

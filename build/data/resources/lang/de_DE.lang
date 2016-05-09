@@ -1,7 +1,12 @@
+# Login Form
 client.login_ip_addr=IP-Addresse
 client.login_username=Benutzername
 client.login_password=Passwort
 client.login_login_btn=Einloggen
 client.login_register_btn=Registrieren
+client.login_remember=Login speichern
 client.error_connect=Kann keine Verbindung zum Server herstellen: 
 client.error_login=Login fehlgeschlagen
+
+# Main Form
+client.media_selector.music=Musik
