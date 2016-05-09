@@ -29,6 +29,7 @@ SOFTWARE.
 #include <string>
 #include <vector>
 
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -54,14 +55,16 @@ namespace MediaCloud {
 		~LanguageProvider();
 		
 		void loadLanguage(std::string);
+		void loadByIdentifier(std::string);
 		std::string getValue(std::string);
 		
 	private:
-		const std::string& languageBasePath = "data/resources/lang/";
 		const std::string& languagesPath = "data/resources/languages.xml";
 		
 		std::string data;
 		std::vector<LanguageDataPair> dataPairs;
+		
+		bool checkID(std::string);
 		
 		std::string getIdentifier(std::string);
 		

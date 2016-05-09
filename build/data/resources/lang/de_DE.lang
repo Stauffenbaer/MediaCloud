@@ -1,1 +1,5 @@
 client.login_ip_addr=IP-Addresse
+client.login_username=Benutzername
+client.login_password=Passwort
+client.login_login_btn=Einloggen
+client.login_register_btn=Registrieren

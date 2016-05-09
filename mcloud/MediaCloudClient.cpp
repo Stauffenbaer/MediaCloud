@@ -26,10 +26,12 @@ SOFTWARE.
 
 using namespace MediaCloud;
 
+LanguageProvider* Provider::lang = 0;
+
 Client::Client(boost::asio::io_service& serv, std::string hostname) :
 	ios(serv),
 	sock(serv)
-{
+{	
 	boost::asio::ip::tcp::endpoint ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(hostname.c_str()), MCC_PORT);
 	sock.connect(ep);
 }
@@ -96,26 +98,26 @@ ServerSelector::ServerSelector(QMainWindow* parent) :
 	main_layout = new QGridLayout(this);
 	
 	label_ip = new QLabel(this);
-	label_ip->setText("IP-Addresse");
+	label_ip->setText(Provider::lang->getValue("client.login_ip_addr").c_str());
 	
 	edit_ip = new QLineEdit(this);
 	
 	label_user = new QLabel(this);
-	label_user->setText("Username");
+	label_user->setText(Provider::lang->getValue("client.login_username").c_str());
 	
 	edit_user = new QLineEdit(this);
 	
 	label_password = new QLabel(this);
-	label_password->setText("Password");
+	label_password->setText(Provider::lang->getValue("client.login_password").c_str());
 	
 	edit_password = new QLineEdit(this);
 	edit_password->setEchoMode(QLineEdit::Password);
 	
 	button_login = new QPushButton(this);
-	button_login->setText("Login");
+	button_login->setText(Provider::lang->getValue("client.login_login_btn").c_str());
 	
 	button_register = new QPushButton(this);
-	button_register->setText("Register");
+	button_register->setText(Provider::lang->getValue("client.login_register_btn").c_str());
 	
 	main_layout->addWidget(label_ip, 0, 0);
 	main_layout->addWidget(edit_ip, 0, 1);
@@ -143,7 +145,7 @@ ServerSelector::~ServerSelector()
 }
 
 SelectorWindow::SelectorWindow()
-{
+{	
 	client = 0;
 	this->setWindowTitle("MediaCloud");
 	

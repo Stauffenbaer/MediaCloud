@@ -29,7 +29,9 @@ using namespace MediaCloud;
 LanguageProvider::LanguageProvider()
 {
 	data = "";
+	languages = std::vector<LanguagePair>();
 	dataPairs = std::vector<LanguageDataPair>();
+	registerAllLanguages();
 }
 
 LanguageProvider::~LanguageProvider()
@@ -39,8 +41,32 @@ LanguageProvider::~LanguageProvider()
 
 void LanguageProvider::loadLanguage(std::string name)
 {
-	std::string path = languageBasePath + getIdentifier(name) + ".lang";
-	data = Utils::deleteAll(Utils::loadFile(path), '\r');
+	std::stringstream path = std::stringstream();
+	std::string identifier = getIdentifier(name);
+	if (!checkID(identifier))
+		identifier = "en_US";
+	path << "data/resources/lang/" << identifier << ".lang";
+	data = Utils::deleteAll(Utils::loadFile(path.str()), '\r');
+	std::vector<std::string> lines = Utils::explode(data, '\n');
+	
+	for(size_t i = 0;i < lines.size(); ++i)
+	{
+		LanguageDataPair l = LanguageDataPair();
+		std::vector<std::string> elements = Utils::explode(lines[i], '=');
+		l.key = elements[0];
+		l.value = elements[1];
+		
+		dataPairs.push_back(l);
+	}
+}
+
+void LanguageProvider::loadByIdentifier(std::string identifier)
+{
+	std::stringstream path = std::stringstream();
+	if (!checkID(identifier))
+		identifier = "en_US";
+	path << "data/resources/lang/" << identifier << ".lang";
+	data = Utils::deleteAll(Utils::loadFile(path.str()), '\r');
 	std::vector<std::string> lines = Utils::explode(data, '\n');
 	
 	for(size_t i = 0;i < lines.size(); ++i)
@@ -56,6 +82,9 @@ void LanguageProvider::loadLanguage(std::string name)
 
 std::string LanguageProvider::getValue(std::string key)
 {
+	if (dataPairs.size() == 0)
+		return "null";
+	
 	for(size_t i = 0;i < dataPairs.size(); ++i)
 	{
 		if (dataPairs[i].key == key)
@@ -96,4 +125,11 @@ void LanguageProvider::registerAllLanguages()
 		pair.identifier = attributes.get<std::string>("value");
 		languages.push_back(pair);
 	}
+}
+
+bool LanguageProvider::checkID(std::string ID)
+{
+	std::stringstream path = std::stringstream();
+	path << "data/resources/lang/" << ID << ".lang";
+	return (boost::filesystem::exists(path.str()));
 }

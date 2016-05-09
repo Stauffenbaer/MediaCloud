@@ -25,8 +25,10 @@ SOFTWARE.
 #include <iostream>
 
 #include "mcloud/MediaCloudClient.h"
+#include "mcloud/MediaCloudUtils.hpp"
 
 #include <boost/asio.hpp>
+#include <boost/locale.hpp>
 
 #include <QtGui/QApplication>
 #include <QtGui/QMainWindow>
@@ -35,8 +37,13 @@ using namespace MediaCloud;
 
 int main(int argc, char **argv) 
 {
+	std::string loc = std::string(std::setlocale(LC_CTYPE, ""));
+	
+	Provider::lang = new LanguageProvider();	
+	Provider::lang->loadByIdentifier(Utils::explode(loc, '.')[0]);
+	
 	QApplication app(argc, argv);
-	app.setStyle("plastique"); 
+	app.setStyle("plastique");
 	SelectorWindow wnd;
 	wnd.show();
 	return app.exec();

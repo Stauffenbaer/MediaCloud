@@ -57,7 +57,7 @@ std::string Utils::loadFile(std::string path)
 	
 	std::string line;
 	while(std::getline(file, line)) {
-		content += line;
+		content += line += "\n";
 	}
 	file.close();
 	

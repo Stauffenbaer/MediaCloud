@@ -28,6 +28,7 @@ SOFTWARE.
 
 #include "MediaCloudUtils.hpp"
 #include "security/MediaCloudLoginProvider.h"
+#include "MediaCloudLanguageProvider.h"
 
 #include <QtGui/QMainWindow>
 #include <QtGui/QLabel>
@@ -46,7 +47,11 @@ SOFTWARE.
 #include <boost/algorithm/string.hpp>
 
 namespace MediaCloud {
-
+	
+	struct Provider {
+		static LanguageProvider *lang;
+	};
+	
 	class Client
 	{
 	public:
