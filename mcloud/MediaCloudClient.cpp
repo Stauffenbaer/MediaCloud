@@ -223,7 +223,7 @@ void SelectorWindow::lgnPressed()
 		else {
 			delete client;
 			QMessageBox box;
-			box.setText("Cannot login to server!");
+			box.setText(Provider::lang->getValue("client.error_login").c_str());
 			box.setWindowTitle("MediaCloud");
 			box.setIcon(QMessageBox::Critical);
 			box.exec();
@@ -231,7 +231,7 @@ void SelectorWindow::lgnPressed()
 	}
 	catch (boost::exception& ex) {
 		QMessageBox box;
-		box.setText((std::string("Cannot connect to: ") + hostname).c_str());
+		box.setText((Provider::lang->getValue("client.error_connect") + hostname).c_str());
 		box.setWindowTitle("MediaCloud");
 		box.setIcon(QMessageBox::Critical);
 		box.exec();
@@ -259,7 +259,7 @@ void SelectorWindow::regPressed()
 		else {
 			delete client;
 			QMessageBox box;
-			box.setText("Cannot login to server!");
+			box.setText(Provider::lang->getValue("client.error_login").c_str());
 			box.setWindowTitle("MediaCloud");
 			box.setIcon(QMessageBox::Critical);
 			box.exec();
@@ -267,7 +267,7 @@ void SelectorWindow::regPressed()
 	}
 	catch (boost::exception& ex) {
 		QMessageBox box;
-		box.setText((std::string("Cannot connect to: ") + hostname).c_str());
+		box.setText((Provider::lang->getValue("client.error_connect") + hostname).c_str());
 		box.setWindowTitle("MediaCloud");
 		box.setIcon(QMessageBox::Critical);
 		box.exec();
