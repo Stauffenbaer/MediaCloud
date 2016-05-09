@@ -41,6 +41,8 @@ SOFTWARE.
 #include <QtGui/QSizePolicy>
 #include <QtGui/QResizeEvent>
 #include <QtGui/QCheckBox>
+#include <QtGui/QAction>
+#include <QtGui/QMenuBar>
 
 #include <QtCore/QEventLoop>
 
@@ -102,6 +104,9 @@ namespace MediaCloud {
 		~SelectorWindow();
 		
 		void setupWindow();
+		
+	protected:
+		QAction *fileMenu;
 		
 	private:
 		boost::asio::io_service serv;

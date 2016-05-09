@@ -160,6 +160,17 @@ SelectorWindow::SelectorWindow()
 	selector = new ServerSelector(this);
 	this->setFixedSize(selector->size());
 	
+	fileMenu = new QAction((std::string("&") + Provider::lang->getValue("client.menu.file")).c_str(), this);
+	fileMenu->setMenu(new QMenu());
+	
+	QAction *quitAction = new QAction(Provider::lang->getValue("client.menu.file.quit").c_str(), this);
+	quitAction->setShortcut(Qt::CTRL + Qt::Key_Q);
+	fileMenu->menu()->addAction(quitAction);
+	connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
+	
+	setMenuBar(new QMenuBar(this));
+	menuBar()->addAction(fileMenu);
+	
 	if (boost::filesystem::exists("data/credentials")) {
 		std::string content = Utils::loadFile("data/credentials");
 		std::vector<std::string> elements = Utils::explode(content, '\n');

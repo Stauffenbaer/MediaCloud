@@ -1,3 +1,7 @@
+# Menu
+client.menu.file=Datei
+client.menu.file.quit=Beenden
+
 # Login Form
 client.login_ip_addr=IP-Addresse
 client.login_username=Benutzername
