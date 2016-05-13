@@ -38,18 +38,18 @@ PermissionProvider::~PermissionProvider()
 
 void PermissionProvider::registerUser(std::string username)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "INSERT INTO tbl_perm (username, level, name) VALUES ('" << username << "', '0', 'default')";
 	db->query(query.str());
 }
 
 void PermissionProvider::setPermissionLevel(std::string username, PermissionSet set)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "UPDATE tbl_perm SET level='" << set.level << "' WHERE username='" << username << "'";
 	db->query(query.str());
 	
-	query = std::stringstream();
+	query.str(std::string());
 	query << "UPDATE tbl_perm SET name='" << set.name << "' WHERE username='" << username << "'";
 	db->query(query.str());
 }

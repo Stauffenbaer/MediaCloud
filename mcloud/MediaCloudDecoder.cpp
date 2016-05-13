@@ -45,7 +45,7 @@ void Decoder::playAudioFile(std::string path)
 {	
 	gst_init(0, 0);
 	
-	std::stringstream s = std::stringstream();
+	std::stringstream s;
 	s << "file://" << path;
 	g_object_set(G_OBJECT(pipeline), "uri", s.str().c_str(), NULL);
 	

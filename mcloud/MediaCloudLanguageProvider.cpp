@@ -41,7 +41,7 @@ LanguageProvider::~LanguageProvider()
 
 void LanguageProvider::loadLanguage(std::string name)
 {
-	std::stringstream path = std::stringstream();
+	std::stringstream path;
 	std::string identifier = getIdentifier(name);
 	if (!checkID(identifier))
 		identifier = "en_US";
@@ -68,7 +68,7 @@ void LanguageProvider::loadLanguage(std::string name)
 
 void LanguageProvider::loadByIdentifier(std::string identifier)
 {
-	std::stringstream path = std::stringstream();
+	std::stringstream path;
 	if (!checkID(identifier))
 		identifier = "en_US";
 	path << "data/resources/lang/" << identifier << ".lang";
@@ -141,7 +141,7 @@ void LanguageProvider::registerAllLanguages()
 
 bool LanguageProvider::checkID(std::string ID)
 {
-	std::stringstream path = std::stringstream();
+	std::stringstream path;
 	path << "data/resources/lang/" << ID << ".lang";
 	return (boost::filesystem::exists(path.str()));
 }

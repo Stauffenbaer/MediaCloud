@@ -246,11 +246,12 @@ void SelectorWindow::lgnPressed()
 		
 		if (login(username, password)) {
 			if (selector->checkbox->isChecked()) {
-				std::stringstream str = std::stringstream();
+				std::stringstream str;
 				str << selector->edit_ip->text().toStdString() << "\n";
 				str << selector->edit_user->text().toStdString();
 				std::string s = str.str();
-				std::fstream fs = std::fstream("data/credentials", std::ios::out);
+				std::fstream fs;
+				fs.open("data/credentials", std::ios::out);
 				fs.clear();
 				fs.write(s.data(), s.size());
 				fs.close();

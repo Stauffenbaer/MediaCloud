@@ -52,7 +52,8 @@ std::string Utils::deleteAll(std::string s, char c)
 
 std::string Utils::loadFile(std::string path)
 {
-	std::fstream file = std::fstream(path.c_str(), std::ios::in);
+	std::fstream file;
+	file.open(path.c_str(), std::ios::in);
 	std::string content = "";
 	
 	std::string line;

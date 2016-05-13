@@ -42,7 +42,7 @@ Filesystem::~Filesystem()
 bool Filesystem::fileRegistered(std::string path)
 {
 	boost::replace_all(path, "\'", "&quot");
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT * FROM tbl_files WHERE path='";
 	query << path << "'";
 	
@@ -69,7 +69,7 @@ void Filesystem::registerFile(std::string path)
 	
 	std::string type = this->getType(path);
 	boost::replace_all(path, "\'", "&quot");
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "INSERT INTO tbl_files (path, type) VALUES ('";
 	query << path << "', '";
 	query << type << "')";
@@ -80,7 +80,7 @@ void Filesystem::registerFile(std::string path)
 		TagData *data = this->getMetaData(path);
 		
 		
-		query = std::stringstream();
+		query.str(std::string());
 		query << "SELECT ID FROM tbl_files WHERE path='";
 		query << path << "'";
 		
@@ -88,7 +88,7 @@ void Filesystem::registerFile(std::string path)
 		if (res != 0) {
 			int fID = atoi(res->data[0].columns[0].c_str());
 			
-			query = std::stringstream();
+			query.str(std::string());
 			query << "INSERT INTO tbl_music (file, title, artist, album, tracknr, duration) VALUES ('";
 			query << fID << "', '";
 			query << data->title << "', '";
@@ -98,14 +98,14 @@ void Filesystem::registerFile(std::string path)
 			query << data->duration << "')";
 			
 			db->query(query.str());
-			query = std::stringstream();
+			query.str(std::string());
 			
 			query << "SELECT ID FROM tbl_music WHERE file='" << fID << "'";
 			Result *res = db->query(query.str());
 			if (res->rows != 0) {
 				int tID = atoi(res->data[0].columns[0].c_str());
 				
-				query = std::stringstream();
+				query.str(std::string());
 				query << "INSERT INTO tbl_covers (trackid, cover) VALUES ('" << tID << "', ' ')";
 				db->query(query.str());
 			}
@@ -186,7 +186,7 @@ void Filesystem::registerAllExtensions()
 
 File* Filesystem::getFile(int ID)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT * FROM tbl_files WHERE ID='";
 	query << ID << "'";
 	
@@ -268,7 +268,7 @@ std::string Filesystem::getTrackCover(std::string trackpath)
 {
 	std::string basedir = trackpath.substr(0, trackpath.find_last_of("/\\"));
 	
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT path FROM tbl_files WHERE type='image' AND path LIKE '" << basedir << "%'";
 	
 	Result *res = db->query(query.str());
@@ -280,7 +280,7 @@ std::string Filesystem::getTrackCover(std::string trackpath)
 
 void Filesystem::registerCovers()
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT trackid FROM tbl_covers WHERE cover=' '";
 	
 	Result *res = db->query(query.str());
@@ -288,11 +288,11 @@ void Filesystem::registerCovers()
 		ResultRow row = res->data[i];
 		
 		int trackID = atoi(row.columns[0].c_str());
-		query = std::stringstream();
+		query.str(std::string());
 		query << "SELECT path FROM tbl_files WHERE ID='" << trackID << "'";
 		
 		Result *r = db->query(query.str());
-		query = std::stringstream();
+		query.str(std::string());
 		query << "UPDATE tbl_covers SET cover='" << getTrackCover(r->data[0].columns[0]) << "' WHERE trackid='" << trackID << "'";
 		db->query(query.str());
 		
