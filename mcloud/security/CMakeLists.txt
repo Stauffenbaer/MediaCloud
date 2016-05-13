@@ -1,4 +1,4 @@
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -Os)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)

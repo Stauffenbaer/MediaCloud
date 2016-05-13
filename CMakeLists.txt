@@ -9,7 +9,7 @@ string(REPLACE "\n" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
 execute_process(COMMAND pkg-config --libs gstreamer-1.0 OUTPUT_VARIABLE CMAKE_LINKER_FLAGS)
 string(REPLACE "\n" "" CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -Os)
 
 find_package(Qt4 REQUIRED COMPONENTS QtGui QtCore)
 
