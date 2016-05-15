@@ -89,7 +89,7 @@ std::vector<Album> AudioProvider::GetAlben()
 	
 	std::stringstream query;
 	for(int i = 0;i < res->rows; ++i) {
-		query = std::stringstream();
+		query.str(std::string());
 		ResultRow r = res->data[i];
 		std::string albumName = r.columns[0];
 		
@@ -131,7 +131,7 @@ std::vector<Playlist> AudioProvider::GetAllPlaylists()
 		plist.name = res->data[i].columns[1];
 		plist.user = getUsername(atoi(res->data[i].columns[2].c_str()));
 		
-		std::stringstream query = std::stringstream();
+		std::stringstream query;
 		query << "SELECT * FROM tbl_playlisttracks WHERE plistID='" << plist.ID << "'";
 		Result *plistRes = db->query(query.str());
 		
@@ -182,7 +182,7 @@ int AudioProvider::getTrackByID(int id, Track* track)
 Track AudioProvider::getTrack(int ID)
 {
 	Track t = Track();
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT * FROM tbl_music WHERE ID='" << ID << "' LIMIT 1";
 	Result *trackRes = db->query(query.str());
 	if (trackRes->rows == 0) {
@@ -197,11 +197,11 @@ Track AudioProvider::getTrack(int ID)
 	t.album = trackRow.columns[4];
 	t.tracknr = atoi(trackRow.columns[5].c_str());
 	t.duration = atoi(trackRow.columns[6].c_str());
-	query = std::stringstream();
+	query.str(std::string());
 	query << "SELECT path FROM tbl_files WHERE ID='" << t.file << "'";
 	t.path = db->query(query.str())->data[0].columns[0];
 	
-	query = std::stringstream();
+	query.str(std::string());
 	query << "SELECT cover FROM tbl_covers WHERE trackid='" << t.ID << "'";
 	t.cover = db->query(query.str())->data[0].columns[0];
 	
@@ -210,7 +210,7 @@ Track AudioProvider::getTrack(int ID)
 
 std::string AudioProvider::getUsername(int ID)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT username FROM tbl_users WHERE ID='" << ID << "'";
 	Result *res = db->query(query.str());
 	std::string user = res->data[0].columns[0];
@@ -220,18 +220,18 @@ std::string AudioProvider::getUsername(int ID)
 
 Playlist AudioProvider::createPlaylist(std::string name, int user)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT name FROM tbl_playlists WHERE name='" << name << "' AND user='" << user << "'";
 	if (db->query(query.str())->rows != 0)
 		return Playlist();
 		
-	query = std::stringstream();
+	query.str(std::string());
 	query << "INSERT INTO tbl_playlists (name, user) VALUES ('" << name << "', '" << user << "')";
 	db->query(query.str());
 	
 	Playlist plist = Playlist();
 	
-	query = std::stringstream();
+	query.str(std::string());
 	query << "SELECT ID FROM tbl_playlists WHERE name='" << name << "' AND user='" << user << "'";
 	Result *res = db->query(query.str());
 	
@@ -247,12 +247,12 @@ int AudioProvider::getCurrentPlaylistIndex(Playlist plist)
 	std::string username = std::string(plist.user);
 	std::string plistname = std::string(plist.name);
 	int usr = getUserID(username);
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT * FROM tbl_playlists WHERE name='" << plistname << "' AND user='" << usr << "'";
 	Result *res = db->query(query.str());	
 	int plistid = atoi(res->data[0].columns[0].c_str());
 	
-	query = std::stringstream();
+	query.str(std::string());
 	query << "SELECT plistindex FROM tbl_playlisttracks WHERE plistid='" << plistid << "' ORDER BY plistindex DESC";
 	res = db->query(query.str());
 	
@@ -272,7 +272,7 @@ void AudioProvider::addTrackToPlaylist(Playlist plist, Track track)
 	int trackid = track.ID;
 	
 	
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "INSERT INTO tbl_playlisttracks (plistid, plistindex, trackid) VALUES ('";
 	query << ID << "', '" << plistindex << "', '" << trackid << "')";
 	
@@ -282,7 +282,7 @@ void AudioProvider::addTrackToPlaylist(Playlist plist, Track track)
 
 int AudioProvider::getUserID(std::string username)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT ID FROM tbl_users WHERE username='" << username << "'";
 	Result *res = db->query(query.str());
 	int ID = atoi(res->data[0].columns[0].c_str());

@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project(mediacloud)
 
-set(CMAKE_C_COMPILER /usr/bin/gcc-5)
-set(CMAKE_CXX_COMPILER /usr/bin/g++-5)
-
 set(CMAKE_AUTOMOC ON)
 
 execute_process(COMMAND pkg-config --cflags gstreamer-1.0 OUTPUT_VARIABLE CMAKE_C_FLAGS)
@@ -12,7 +9,7 @@ string(REPLACE "\n" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
 execute_process(COMMAND pkg-config --libs gstreamer-1.0 OUTPUT_VARIABLE CMAKE_LINKER_FLAGS)
 string(REPLACE "\n" "" CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -Os)
 
 find_package(Qt4 REQUIRED COMPONENTS QtGui QtCore)
 

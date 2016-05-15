@@ -270,7 +270,7 @@ bool Server::commandHandlerRequestLogin(std::string cmd, std::vector< std::strin
 	
 	std::string salt = sessionptr->parent->login->getLoginSalt((*args)[0]);
 	
-	std::stringstream stream = std::stringstream();
+	std::stringstream stream;
 	stream << std::to_string(n) << ";" << salt << "\n";
 	
 	sessionptr->writeString(stream.str());
@@ -324,7 +324,7 @@ bool Server::commandHandlerRequestMeta(std::string cmd, std::vector< std::string
 	else
 		audio->getTrackByID(atoi((*args)[0].c_str()), &track);
 	
-	std::stringstream meta = std::stringstream();
+	std::stringstream meta;
 	meta << "TITLE:" << track.title << ";";
 	meta << "ARTIST:" << track.artist << ";";
 	meta << "ALBUM:" << track.album << ";";
@@ -341,7 +341,7 @@ bool Server::commandHandlerRequestAlben(std::string cmd, std::vector<std::string
 	
 	AudioProvider *audio = sessionptr->parent->audio;
 	
-	std::stringstream meta = std::stringstream();
+	std::stringstream meta;
 	std::vector<Album> alben = audio->GetAlben();
 	for(auto it = alben.begin(); it != alben.end(); ++it) {
 		Album a = *it;
@@ -368,7 +368,7 @@ bool Server::commandHandlerRequestAlbumTracks(std::string cmd, std::vector<std::
 			album = *it;
 	}
 	
-	std::stringstream tracklist = std::stringstream();
+	std::stringstream tracklist;
 	
 	for(auto it = album.tracks.begin(); it != album.tracks.end(); ++it) {
 		Track t = *it;

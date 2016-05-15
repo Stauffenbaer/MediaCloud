@@ -45,7 +45,7 @@ std::string LoginProvider::sha1(char *buffer, size_t length)
 		hash[4 * i + 3] = tmp[4 * i + 0];
 	}
 	
-	std::stringstream stream = std::stringstream();
+	std::stringstream stream;
 	
 	for(int i = 0; i < 20; ++i)
     {
@@ -77,7 +77,7 @@ std::string LoginProvider::sha1(std::string string)
 		hash[4 * i + 3] = tmp[4 * i + 0];
 	}
 	
-	std::stringstream stream = std::stringstream();
+	std::stringstream stream;
 	
 	for(int i = 0; i < 20; ++i)
     {
@@ -123,7 +123,7 @@ void LoginProvider::setLoginUser(std::string username)
 
 std::string LoginProvider::getLoginSalt(std::string username)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT salt FROM tbl_users WHERE username='";
 	query << username << "'";
 	
@@ -139,7 +139,7 @@ bool LoginProvider::Login(std::string username, std::string passwordHashToken)
 	if (username == "nil")
 		username = user;
 	
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT password FROM tbl_users WHERE username='" << username << "'";
 	Result *res = db->query(query.str());
 	
@@ -152,7 +152,7 @@ bool LoginProvider::Login(std::string username, std::string passwordHashToken)
 
 bool LoginProvider::Register(std::string username, std::string password)
 {
-	std::stringstream query = std::stringstream();
+	std::stringstream query;
 	query << "SELECT ID FROM tbl_users WHERE username='";
 	query << username << "'";
 	if (db->query(query.str())->rows != 0)
@@ -162,7 +162,7 @@ bool LoginProvider::Register(std::string username, std::string password)
 	std::string hash = sha1((char *) &rand, sizeof(rand));
 	std::string passwordHash = password;
 	
-	query = std::stringstream();
+	query.str(std::string());
 	query << "INSERT INTO tbl_users (username, password, salt) VALUES ('";
 	query << username << "', '";
 	query << sha1(passwordHash + hash) << "', '";
