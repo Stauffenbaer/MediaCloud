@@ -11,6 +11,7 @@ client.login_register_btn=Registrieren
 client.login_remember=Login speichern
 client.error_connect=Kann keine Verbindung zum Server herstellen: 
 client.error_login=Login fehlgeschlagen
+client.error_register=Registrierung fehlgeschlagen
 
 # Main Form
 client.media_selector.music=Musik

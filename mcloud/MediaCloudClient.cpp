@@ -38,7 +38,7 @@ Client::Client(boost::asio::io_service& serv, std::string hostname) :
 
 Client::~Client()
 {
-	
+	sock.close();
 }
 
 byte_buffer Client::readData()
@@ -182,7 +182,12 @@ SelectorWindow::SelectorWindow()
 SelectorWindow::~SelectorWindow()
 {
 	if (client != 0)
+	try {
 		delete client;
+	}
+	catch (std::exception& ex) {
+		
+	}
 }
 
 void SelectorWindow::setupWindow()
@@ -258,7 +263,12 @@ void SelectorWindow::lgnPressed()
 			setupWindow();
 		}
 		else {
-			delete client;
+			try {
+				delete client;
+			}
+			catch (std::exception& ex) {
+				
+			}
 			QMessageBox box;
 			box.setText(Provider::lang->getValue("client.error_login").c_str());
 			box.setWindowTitle("MediaCloud");
@@ -294,9 +304,14 @@ void SelectorWindow::regPressed()
 		if (usr_register(username, password))
 			setupWindow();
 		else {
-			delete client;
+			try {
+				delete client;
+			}
+			catch (std::exception& ex) {
+				
+			}
 			QMessageBox box;
-			box.setText(Provider::lang->getValue("client.error_login").c_str());
+			box.setText(Provider::lang->getValue("client.error_register").c_str());
 			box.setWindowTitle("MediaCloud");
 			box.setIcon(QMessageBox::Critical);
 			box.exec();
