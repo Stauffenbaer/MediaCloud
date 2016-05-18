@@ -13,6 +13,7 @@ For security-reasons MediaCloud is providing a login-system, so nobody can acces
 <br />
 **Current dependencies** <br />
 libgstreamer1.0-dev <br />
+libgstreamer-plugins-base1.0-dev <br />
 libboost-dev <br />
 libboost-filesystem-dev <br />
 libboost-system-dev <br />

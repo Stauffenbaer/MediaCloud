@@ -20,7 +20,13 @@ include(${CMAKE_ROOT}/Modules/FindPkgConfig.cmake)
 execute_process(COMMAND pkg-config --cflags gstreamer-1.0 OUTPUT_VARIABLE CMAKE_C_FLAGS)
 string(REPLACE "\n" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
 
+execute_process(COMMAND pkg-config --cflags gstreamer-video-1.0 OUTPUT_VARIABLE CMAKE_C_FLAGS)
+string(REPLACE "\n" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+
 execute_process(COMMAND pkg-config --libs gstreamer-1.0 OUTPUT_VARIABLE CMAKE_LINKER_FLAGS)
+string(REPLACE "\n" "" CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
+
+execute_process(COMMAND pkg-config --libs gstreamer-video-1.0 OUTPUT_VARIABLE CMAKE_LINKER_FLAGS)
 string(REPLACE "\n" "" CMAKE_LINKER_FLAGS ${CMAKE_LINKER_FLAGS})
 
 set_target_properties(mcloud PROPERTIES COMPILE_FLAGS ${CMAKE_C_FLAGS} LINKER_FLAGS ${CMAKE_LINKER_FLAGS})

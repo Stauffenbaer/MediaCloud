@@ -27,7 +27,8 @@ SOFTWARE.
 #include "MediaCloudFilesystem.h"
 
 extern "C" {
-#include <gst/gst.h>
+	#include <gst/gst.h>
+	#include <gst/video/videooverlay.h>
 }
 
 #include <iostream>
@@ -35,6 +36,10 @@ extern "C" {
 #include <boost/algorithm/string.hpp>
 #include <boost/thread.hpp>
 #include <cerrno>
+
+#include <QtCore/QTimer>
+#include <QtGui/QWidget>
+#include <QtGui/QApplication>
 
 namespace MediaCloud {
 
@@ -45,6 +50,7 @@ namespace MediaCloud {
 		~Decoder();
 		
 		void playAudioFile(std::string);
+		void playVideoFile(std::string);
 		
 		void setVolume(float);
 		void setLowGain(float);
@@ -60,6 +66,8 @@ namespace MediaCloud {
 		GstPad *pad, *ghost_pad;
 		GstBus *bus;
 		GstMessage *msg;
+		
+		GstElement* find_video_sink();
 	};
 
 }

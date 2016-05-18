@@ -45,6 +45,8 @@ void Decoder::playAudioFile(std::string path)
 {	
 	gst_init(0, 0);
 	
+	pipeline = gst_element_factory_make ("playbin", NULL);
+	
 	std::stringstream s;
 	s << "file://" << path;
 	g_object_set(G_OBJECT(pipeline), "uri", s.str().c_str(), NULL);
@@ -70,6 +72,44 @@ void Decoder::playAudioFile(std::string path)
 		gst_message_unref(msg);
 	gst_object_unref(bus);
 	gst_element_set_state(pipeline, GST_STATE_NULL);
+}
+
+void Decoder::playVideoFile(std::string path)
+{
+	gst_init (0, 0);
+	QApplication app(0, 0);
+	app.setQuitOnLastWindowClosed(true);
+	
+	std::stringstream s;
+	s << "file://" << path;
+	
+	pipeline = gst_element_factory_make ("playbin", NULL);
+	GstElement *videosink = gst_element_factory_make ("xvimagesink", NULL);
+	
+	g_object_set (pipeline, "video-sink", videosink, NULL);
+	g_object_set (pipeline, "uri", s.str().c_str(), NULL);
+	
+	QWidget window;
+	window.setWindowTitle("MediaCloud Server");
+	window.showFullScreen();
+	
+	WId xwinid = window.winId();
+	QApplication::syncX();
+	gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY (videosink), xwinid);
+	
+	GstStateChangeReturn sret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
+	if (sret == GST_STATE_CHANGE_FAILURE) {
+		gst_element_set_state (pipeline, GST_STATE_NULL);
+		gst_object_unref (pipeline);
+		
+		QTimer::singleShot(0, QApplication::activeWindow(), SLOT(quit()));
+	}
+	
+	app.exec();
+	
+	window.hide();
+	gst_element_set_state (pipeline, GST_STATE_NULL);
+	gst_object_unref (pipeline);
 }
 
 void Decoder::setVolume(float v)
@@ -105,4 +145,44 @@ void Decoder::continueAudio()
 void Decoder::stopAudio()
 {
 	gst_element_set_state(pipeline, GST_STATE_NULL);
+}
+
+GstElement* Decoder::find_video_sink()
+{
+	GstStateChangeReturn sret;
+	GstElement *sink;
+	
+	if ((sink = gst_element_factory_make ("xvimagesink", NULL))) {
+		sret = gst_element_set_state (sink, GST_STATE_READY);
+		if (sret == GST_STATE_CHANGE_SUCCESS)
+			return sink;
+		
+		gst_element_set_state (sink, GST_STATE_NULL);
+		gst_object_unref (sink);
+	}
+	
+	if ((sink = gst_element_factory_make ("ximagesink", NULL))) {
+		sret = gst_element_set_state (sink, GST_STATE_READY);
+		if (sret == GST_STATE_CHANGE_SUCCESS)
+			return sink;
+		
+		gst_element_set_state (sink, GST_STATE_NULL);
+		gst_object_unref (sink);
+	}
+	
+	if ((sink = gst_element_factory_make ("xvimagesink", NULL))) {
+		if (GST_IS_BIN (sink)) {
+			gst_object_unref (sink);
+			return NULL;
+		}
+		
+		sret = gst_element_set_state (sink, GST_STATE_READY);
+		if (sret == GST_STATE_CHANGE_SUCCESS)
+			return sink;
+		
+		gst_element_set_state (sink, GST_STATE_NULL);
+		gst_object_unref (sink);
+	}
+	
+	return NULL;
 }
