@@ -103,7 +103,7 @@ std::string LanguageProvider::getValue(std::string key)
 			return dataPairs[i].value;
 	}
 	
-	return "null";
+	return key;
 }
 
 std::string LanguageProvider::getIdentifier(std::string name)

@@ -190,10 +190,10 @@ SelectorWindow::~SelectorWindow()
 	}
 }
 
-void SelectorWindow::setupWindow()
+void SelectorWindow::setupWindow(Client* client)
 {
 	this->hide();
-	MainWindow wnd;
+	MainWindow wnd(client);
 	wnd.show();
 	
 	QEventLoop loop;
@@ -261,7 +261,7 @@ void SelectorWindow::lgnPressed()
 				fs.write(s.data(), s.size());
 				fs.close();
 			}
-			setupWindow();
+			setupWindow(client);
 		}
 		else {
 			try {
@@ -303,7 +303,7 @@ void SelectorWindow::regPressed()
 			return;
 		
 		if (usr_register(username, password))
-			setupWindow();
+			setupWindow(client);
 		else {
 			try {
 				delete client;
@@ -341,7 +341,12 @@ SidebarWidget::SidebarWidget(QWidget* parent) :
 	media_music->setText(Provider::lang->getValue("client.media_selector.music").c_str());
 	media_music->setFixedHeight(25);
 	
+	media_video = new QLabel("media_video", this);
+	media_video->setText(Provider::lang->getValue("client.media_selector.video").c_str());
+	media_video->setFixedHeight(25);
+	
 	selector_layout->addWidget(media_music, 0, 0, Qt::AlignTop);
+	selector_layout->addWidget(media_video, 1, 0, Qt::AlignTop);
 	
 	media_selector->setLayout(selector_layout);
 	
@@ -400,13 +405,30 @@ MainWidget::~MainWidget()
 	
 }
 
-MainWindow::MainWindow() :
+MainWindow::MainWindow(Client* c) :
 	QMainWindow()
 {
+	this->client = c;
 	this->setWindowTitle("MediaCloud");
 	
 	widget = new MainWidget(this);
 	resize(widget->size());
+	
+	fileMenu = new QAction((std::string("&") + Provider::lang->getValue("client.menu.file")).c_str(), this);
+	fileMenu->setMenu(new QMenu());
+	
+	QAction *settingsAction = new QAction(Provider::lang->getValue("client.menu.file.settings").c_str(), this);
+	settingsAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_S);
+	fileMenu->menu()->addAction(settingsAction);
+	connect(settingsAction, SIGNAL(triggered()), this, SLOT(openSettings()));
+	
+	QAction *quitAction = new QAction(Provider::lang->getValue("client.menu.file.quit").c_str(), this);
+	quitAction->setShortcut(Qt::CTRL + Qt::Key_Q);
+	fileMenu->menu()->addAction(quitAction);
+	connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
+	
+	setMenuBar(new QMenuBar(this));
+	menuBar()->addAction(fileMenu);
 }
 
 MainWindow::~MainWindow()
@@ -418,4 +440,93 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
 	QWidget::resizeEvent(event);
 	widget->resize(event->size());
+}
+
+void MainWindow::openSettings()
+{
+	SettingsWindow wnd(client);
+	wnd.show();
+	
+	QEventLoop loop;
+    connect(&wnd, SIGNAL(destroyed()), &loop, SLOT(quit()));
+    loop.exec();
+}
+
+SettingsWidget::SettingsWidget(QMainWindow* parent, Client* c) :
+	QWidget(parent)
+{
+	this->client = c;
+	keys = std::vector<std::string>();
+	oldValues = std::vector<std::string>();
+	newValues = std::vector<QLineEdit*>();
+	
+	resize(QSize(400, 600));
+	main_layout = new QGridLayout(this);
+	
+	this->addSettingsField("application.root_directory");
+	
+	QPushButton *confirmButton = new QPushButton(this);
+	confirmButton->setText(Provider::lang->getValue("client.settings.confirm").c_str());
+	connect(confirmButton, SIGNAL(pressed()), this, SLOT(saveSettings()));
+	main_layout->addWidget(confirmButton, gridIndex, 0, Qt::AlignBottom);
+	
+	this->setLayout(main_layout);
+}
+
+SettingsWidget::~SettingsWidget()
+{
+	
+}
+
+void SettingsWidget::addSettingsField(std::string identifier)
+{
+	QLabel *label = new QLabel(this);
+	QLineEdit *edit = new QLineEdit(this);
+	
+	label->setText(Provider::lang->getValue(identifier).c_str());
+	
+	std::stringstream s;
+	s << "SETTINGS_GET~" << identifier;
+	client->writeString(s.str());
+	std::string resp = client->readString();
+	
+	edit->setText(resp.c_str());
+	
+	keys.push_back(identifier);
+	oldValues.push_back(resp);
+	newValues.push_back(edit);
+	
+	main_layout->addWidget(label, gridIndex, 0, Qt::AlignTop);
+	main_layout->addWidget(edit, gridIndex, 1, Qt::AlignTop);
+	
+	gridIndex++;
+}
+
+void SettingsWidget::saveSettings()
+{
+	for(size_t i = 0;i < keys.size(); ++i) {
+		std::string old = oldValues[i];
+		std::string nw = newValues[i]->text().toStdString();
+		
+		if (old != nw) {
+			std::stringstream s;
+			s << "SETTINGS_SET~" << keys[i] << "~" << nw;
+			client->writeString(s.str());
+		}
+	}
+}
+
+SettingsWindow::SettingsWindow(Client* c) :
+	QMainWindow()
+{
+	this->client = c;
+	this->setWindowTitle("MediaCloud - Settings");
+	
+	widget = new SettingsWidget(this, c);
+	resize(widget->size());
+}
+
+SettingsWindow::~SettingsWindow()
+{
+	
 }

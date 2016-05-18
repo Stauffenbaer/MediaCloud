@@ -1,6 +1,7 @@
 # Menu
 client.menu.file=Datei
 client.menu.file.quit=Beenden
+client.menu.file.settings=Einstellungen
 
 # Login Form
 client.login_ip_addr=IP-Addresse
@@ -15,3 +16,9 @@ client.error_register=Registrierung fehlgeschlagen
 
 # Main Form
 client.media_selector.music=Musik
+client.media_selector.video=Videos
+
+# Settings Form
+client.settings.confirm=Speichern
+
+application.root_directory=Hauptverzeichnis

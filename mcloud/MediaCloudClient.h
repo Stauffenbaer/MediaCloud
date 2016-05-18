@@ -103,7 +103,7 @@ namespace MediaCloud {
 		SelectorWindow();
 		~SelectorWindow();
 		
-		void setupWindow();
+		void setupWindow(Client*);
 		
 	protected:
 		QAction *fileMenu;
@@ -132,6 +132,45 @@ namespace MediaCloud {
 		
 		QFrame *media_selector;
 		QLabel *media_music;
+		QLabel *media_video;
+	};
+	
+	class SettingsWidget : public QWidget
+	{
+		Q_OBJECT
+	public:
+		SettingsWidget(QMainWindow*, Client*);
+		~SettingsWidget();
+		
+	protected:
+		QGridLayout *main_layout;
+		
+	private:
+		Client *client;
+		
+		uint8_t gridIndex = 0;
+		void addSettingsField(std::string);
+		
+		std::vector<std::string> keys;
+		std::vector<std::string> oldValues;
+		std::vector<QLineEdit*> newValues;
+		
+	private slots:
+		void saveSettings();
+	};
+	
+	class SettingsWindow : public QMainWindow
+	{
+		Q_OBJECT
+	public:
+		SettingsWindow(Client*);
+		~SettingsWindow();
+		
+	protected:
+		SettingsWidget *widget;
+		
+	private:
+		Client *client;
 	};
 	
 	class MainWidget : public QWidget
@@ -153,12 +192,19 @@ namespace MediaCloud {
 	{
 		Q_OBJECT
 	public:
-		MainWindow();
+		MainWindow(Client*);
 		~MainWindow();
 		
 	protected:
 		MainWidget *widget;
 		void resizeEvent(QResizeEvent*);
+		
+		QAction *fileMenu;
+		
+	private:
+		Client *client;
+	private slots:
+		void openSettings();
 	};
 
 }

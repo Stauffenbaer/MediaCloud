@@ -82,6 +82,7 @@ void Server::InitializeSocket()
 	controlHandlers.push_back(&Server::commandHandlerPlay);
 	controlHandlers.push_back(&Server::commandHandlerStop);
 	controlHandlers.push_back(&Server::commandHandlerSetVolume);
+	controlHandlers.push_back(&Server::commandHandlerSettingsGet);
 	controlHandlers.push_back(&Server::commandHandlerSettingsSet);
 }
 
@@ -426,6 +427,24 @@ bool Server::commandHandlerSetVolume(std::string cmd, std::vector< std::string >
 	float v = std::stof((*args)[0].c_str());
 	v = Utils::clamp<float>(0.0f, 2.0f, v);
 	audio->setVolume(v);
+	
+	return true;
+}
+
+bool Server::commandHandlerSettingsGet(std::string cmd, std::vector< std::string >* args, Server::session* sessionptr)
+{
+	if (!boost::iequals(cmd, "SETTINGS_GET"))
+		return false;
+	
+	Settings *settings = sessionptr->parent->settings;
+	
+	std::string key = (*args)[0];
+	std::string *value = settings->GetValue(key);
+	
+	if (value != 0) {
+		std::string v = *value;
+		sessionptr->writeString(v);
+	}
 	
 	return true;
 }
