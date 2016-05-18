@@ -66,8 +66,6 @@ namespace MediaCloud {
 		GstPad *pad, *ghost_pad;
 		GstBus *bus;
 		GstMessage *msg;
-		
-		GstElement* find_video_sink();
 	};
 
 }
