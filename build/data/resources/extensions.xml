@@ -6,4 +6,7 @@
 	
 	<extension key="jpg" value="image" />
 	<extension key="jpeg" value="image" />
+	
+	<extension key="avi" value="video" />
+	<extension key="mp4" value="video" />
 </extensions>
