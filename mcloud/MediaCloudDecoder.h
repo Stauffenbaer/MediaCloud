@@ -53,17 +53,13 @@ namespace MediaCloud {
 		void playVideoFile(std::string);
 		
 		void setVolume(float);
-		void setLowGain(float);
-		void setMiddleGain(float);
-		void setHighGain(float);
 		
 		void pauseAudio();
 		void continueAudio();
 		void stopAudio();
 		
 	private:
-		GstElement *pipeline, *bin, *equalizer, *convert, *sink;
-		GstPad *pad, *ghost_pad;
+		GstElement *pipeline;
 		GstBus *bus;
 		GstMessage *msg;
 	};

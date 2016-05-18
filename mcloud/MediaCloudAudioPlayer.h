@@ -49,10 +49,6 @@ namespace MediaCloud {
 		
 		void setVolume(float);
 		
-		void setLow(float);
-		void setMiddle(float);
-		void setHigh(float);
-		
 		bool isFinished();
 		
 	protected:

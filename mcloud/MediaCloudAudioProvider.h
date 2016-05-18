@@ -113,10 +113,6 @@ namespace MediaCloud {
 		
 		void setVolume(float);
 		
-		void setLow(float);
-		void setMiddle(float);
-		void setHigh(float);
-		
 		void playSynchronousTrack(Track);
 		
 		int currentTrack;

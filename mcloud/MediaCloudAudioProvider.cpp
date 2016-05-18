@@ -357,21 +357,6 @@ void AudioProvider::setVolume(float v)
 	this->player->setVolume(v);
 }
 
-void AudioProvider::setLow(float g)
-{
-	player->setLow(g);
-}
-
-void AudioProvider::setMiddle(float g)
-{
-	player->setMiddle(g);
-}
-
-void AudioProvider::setHigh(float g)
-{
-	player->setHigh(g);
-}
-
 void AudioProvider::pauseState()
 {
 	player->setPaused();

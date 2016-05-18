@@ -31,9 +31,6 @@ Decoder::Decoder()
 	gst_init(0, 0);
 	
  	pipeline = gst_parse_launch("playbin", NULL);
-	equalizer = gst_element_factory_make("equalizer-3bands", "equalizer");
-	convert = gst_element_factory_make("audioconvert", "convert");
-	sink = gst_element_factory_make("autoaudiosink", "audio_sink");
 }
 
 Decoder::~Decoder()
@@ -45,22 +42,14 @@ void Decoder::playAudioFile(std::string path)
 {	
 	gst_init(0, 0);
 	
-	pipeline = gst_element_factory_make ("playbin", NULL);
-	
 	std::stringstream s;
 	s << "file://" << path;
+	
+	pipeline = gst_element_factory_make ("playbin", NULL);
+	GstElement *audiosink = gst_element_factory_make("audiosink", NULL);
+	
+	g_object_set(G_OBJECT(pipeline), "audio-sink", audiosink, NULL);
 	g_object_set(G_OBJECT(pipeline), "uri", s.str().c_str(), NULL);
-	
-	bin = gst_bin_new("audio_sink_bin");
-	gst_bin_add_many(GST_BIN (bin), equalizer, convert, sink, NULL);
-	gst_element_link_many(equalizer, convert, sink, NULL);
-	pad = gst_element_get_static_pad(equalizer, "sink");
-	ghost_pad = gst_ghost_pad_new("sink", pad);
-	gst_pad_set_active(ghost_pad, TRUE);
-	gst_element_add_pad(bin, ghost_pad);
-	gst_object_unref(pad);
-	
-	g_object_set(GST_OBJECT (pipeline), "audio-sink", bin, NULL);
 	
 	gst_element_set_state(pipeline, GST_STATE_PLAYING);
 	
@@ -115,21 +104,6 @@ void Decoder::playVideoFile(std::string path)
 void Decoder::setVolume(float v)
 {
 	g_object_set(G_OBJECT(pipeline), "volume", v, NULL);
-}
-
-void Decoder::setLowGain(float g)
-{
-	g_object_set(G_OBJECT(equalizer), "band0", g, NULL);
-}
-
-void Decoder::setMiddleGain(float g)
-{
-	g_object_set(G_OBJECT(equalizer), "band1", g, NULL);
-}
-
-void Decoder::setHighGain(float g)
-{
-	g_object_set(G_OBJECT(equalizer), "band2", g, NULL);
 }
 
 void Decoder::pauseAudio()
