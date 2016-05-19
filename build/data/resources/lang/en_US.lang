@@ -1,0 +1,24 @@
+# Menu
+client.menu.file=File
+client.menu.file.quit=Quit
+client.menu.file.settings=Settings
+
+# Login Form
+client.login_ip_addr=IP-address
+client.login_username=Username
+client.login_password=Password
+client.login_login_btn=Login
+client.login_register_btn=Register
+client.login_remember=Remember login
+client.error_connect=Cannot connect to server: 
+client.error_login=Login failed
+client.error_register=Cannot register
+
+# Main Form
+client.media_selector.music=Music
+client.media_selector.video=Videos
+
+# Settings Form
+client.settings.confirm=Save
+
+application.root_directory=Root directory
