@@ -45,7 +45,7 @@ void Decoder::playAudioFile(std::string path)
 	std::stringstream s;
 	s << "file://" << path;
 	
-	pipeline = gst_element_factory_make ("playbin", NULL);
+	pipeline = gst_element_factory_make("playbin", NULL);
 	GstElement *audiosink = gst_element_factory_make("audiosink", NULL);
 	
 	g_object_set(G_OBJECT(pipeline), "audio-sink", audiosink, NULL);
@@ -57,7 +57,7 @@ void Decoder::playAudioFile(std::string path)
 	GstMessageType msgType = (GstMessageType) (GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
 	msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, msgType );
 	
-	if (msg != NULL)
+	if(msg != NULL)
 		gst_message_unref(msg);
 	gst_object_unref(bus);
 	gst_element_set_state(pipeline, GST_STATE_NULL);
@@ -65,18 +65,18 @@ void Decoder::playAudioFile(std::string path)
 
 void Decoder::playVideoFile(std::string path)
 {
-	gst_init (0, 0);
+	gst_init(0, 0);
 	QApplication app(0, 0);
 	app.setQuitOnLastWindowClosed(true);
 	
 	std::stringstream s;
 	s << "file://" << path;
 	
-	pipeline = gst_element_factory_make ("playbin", NULL);
-	GstElement *videosink = gst_element_factory_make ("xvimagesink", NULL);
+	pipeline = gst_element_factory_make("playbin", NULL);
+	GstElement *videosink = gst_element_factory_make("xvimagesink", NULL);
 	
-	g_object_set (pipeline, "video-sink", videosink, NULL);
-	g_object_set (pipeline, "uri", s.str().c_str(), NULL);
+	g_object_set(pipeline, "video-sink", videosink, NULL);
+	g_object_set(pipeline, "uri", s.str().c_str(), NULL);
 	
 	QWidget window;
 	window.setWindowTitle("MediaCloud Server");
@@ -84,12 +84,12 @@ void Decoder::playVideoFile(std::string path)
 	
 	WId xwinid = window.winId();
 	QApplication::syncX();
-	gst_video_overlay_set_window_handle (GST_VIDEO_OVERLAY (videosink), xwinid);
+	gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videosink), xwinid);
 	
-	GstStateChangeReturn sret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
-	if (sret == GST_STATE_CHANGE_FAILURE) {
-		gst_element_set_state (pipeline, GST_STATE_NULL);
-		gst_object_unref (pipeline);
+	GstStateChangeReturn sret = gst_element_set_state(pipeline, GST_STATE_PLAYING);
+	if(sret == GST_STATE_CHANGE_FAILURE) {
+		gst_element_set_state(pipeline, GST_STATE_NULL);
+		gst_object_unref(pipeline);
 		
 		QTimer::singleShot(0, QApplication::activeWindow(), SLOT(quit()));
 	}
@@ -97,8 +97,8 @@ void Decoder::playVideoFile(std::string path)
 	app.exec();
 	
 	window.hide();
-	gst_element_set_state (pipeline, GST_STATE_NULL);
-	gst_object_unref (pipeline);
+	gst_element_set_state(pipeline, GST_STATE_NULL);
+	gst_object_unref(pipeline);
 }
 
 void Decoder::setVolume(float v)
