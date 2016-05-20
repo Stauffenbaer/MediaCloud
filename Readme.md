@@ -21,3 +21,4 @@ libboost-thread-dev <br />
 libsqlite3-dev <br />
 libavutil-dev <br />
 libavformat-dev <br />
+libqt4-dev <br />

@@ -445,6 +445,9 @@ bool Server::commandHandlerSettingsGet(std::string cmd, std::vector< std::string
 		std::string v = *value;
 		sessionptr->writeString(v);
 	}
+	else {
+		sessionptr->writeString("-");
+	}
 	
 	return true;
 }
